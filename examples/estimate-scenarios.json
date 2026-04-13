@@ -1,0 +1,61 @@
+{
+  "scenarios": [
+    {
+      "id": "minimo",
+      "description": "Servicio sin largo y sin extras",
+      "input": {
+        "techniqueKind": "no-length",
+        "techniqueName": "Kapping Gel",
+        "length": 1,
+        "decorationCounts": {
+          "Espejo": 0,
+          "Aurora": 0,
+          "Cromo": 0
+        },
+        "selectionOrder": [],
+        "extraTones": 0,
+        "changeShape": false,
+        "retiroType": "none",
+        "reposicionType": "none"
+      }
+    },
+    {
+      "id": "medio",
+      "description": "Tecnica con largo, decoracion parcialmente gratis y tonos",
+      "input": {
+        "techniqueKind": "with-length",
+        "techniqueName": "Acrilico",
+        "length": 3,
+        "decorationCounts": {
+          "Espejo": 2,
+          "Aurora": 1,
+          "Cromo": 0
+        },
+        "selectionOrder": ["Espejo", "Aurora"],
+        "extraTones": 1,
+        "changeShape": false,
+        "retiroType": "none",
+        "reposicionType": "none"
+      }
+    },
+    {
+      "id": "complejo",
+      "description": "Escenario real con largo cap, combinacion de extras y multiples decoraciones",
+      "input": {
+        "techniqueKind": "with-length",
+        "techniqueName": "Acrilico",
+        "length": 9,
+        "decorationCounts": {
+          "Espejo": 1,
+          "Aurora": 3,
+          "Cromo": 2
+        },
+        "selectionOrder": ["Aurora", "Espejo", "Cromo"],
+        "extraTones": 2,
+        "changeShape": true,
+        "retiroType": "gel",
+        "reposicionType": "polygel"
+      }
+    }
+  ]
+}
