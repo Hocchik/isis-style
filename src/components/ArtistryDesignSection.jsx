@@ -1,16 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 
 export function ArtistryDesignSection({
-  decorationOptions,
+  simpleDecorationOptions,
+  fullDesignOptions,
   decorationCounts,
   decorationState,
   decorationPrices,
   onUpdateDecorationQty,
+  onSetFullDesignSelected,
   formatCurrency,
 }) {
   const trackRef = useRef(null)
+  const fullTrackRef = useRef(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
+  const [canScrollFullLeft, setCanScrollFullLeft] = useState(false)
+  const [canScrollFullRight, setCanScrollFullRight] = useState(true)
 
   useEffect(() => {
     const track = trackRef.current
@@ -32,10 +37,46 @@ export function ArtistryDesignSection({
       track.removeEventListener('scroll', updateScrollState)
       window.removeEventListener('resize', updateScrollState)
     }
-  }, [decorationOptions.length])
+  }, [simpleDecorationOptions.length])
+
+  useEffect(() => {
+    const track = fullTrackRef.current
+    if (!track) return undefined
+
+    function updateScrollState() {
+      const maxScroll = track.scrollWidth - track.clientWidth
+      const left = track.scrollLeft
+
+      setCanScrollFullLeft(left > 4)
+      setCanScrollFullRight(left < maxScroll - 4)
+    }
+
+    updateScrollState()
+    track.addEventListener('scroll', updateScrollState)
+    window.addEventListener('resize', updateScrollState)
+
+    return () => {
+      track.removeEventListener('scroll', updateScrollState)
+      window.removeEventListener('resize', updateScrollState)
+    }
+  }, [fullDesignOptions.length])
 
   function scrollTrack(direction) {
     const track = trackRef.current
+    if (!track) return
+
+    const firstCard = track.querySelector('.design-card')
+    const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 320
+    const step = cardWidth + 14
+
+    track.scrollBy({
+      left: direction * step,
+      behavior: 'smooth',
+    })
+  }
+
+  function scrollFullTrack(direction) {
+    const track = fullTrackRef.current
     if (!track) return
 
     const firstCard = track.querySelector('.design-card')
@@ -77,9 +118,10 @@ export function ArtistryDesignSection({
         </div>
       </div>
 
+      <p className="group-title">Decoraciones simples (por par)</p>
       <div className="design-carousel">
         <div className="design-track" ref={trackRef}>
-        {decorationOptions.map((item) => {
+        {simpleDecorationOptions.map((item) => {
           const qty = decorationCounts[item.name] || 0
           const decorationUi = decorationState[item.name] || {
             badge: null,
@@ -91,12 +133,12 @@ export function ArtistryDesignSection({
               <img src={item.image} alt={item.name} loading="lazy" />
               <div className="design-body">
                 <h3>{item.name}</h3>
-                <p>{formatCurrency(decorationPrices[item.name] || 0)} c/u</p>
+                <p>{formatCurrency(decorationPrices[item.name] || 0)} por par</p>
                 {decorationUi.badge ? (
                   <span className="included-badge">{decorationUi.badge}</span>
                 ) : null}
                 <div className="qty-control">
-                  <span>Cantidad</span>
+                  <span>Pares</span>
                   <div>
                     <button onClick={() => onUpdateDecorationQty(item.name, -1)} disabled={qty <= 0}>
                       -
@@ -105,6 +147,72 @@ export function ArtistryDesignSection({
                     <button
                       onClick={() => onUpdateDecorationQty(item.name, 1)}
                       disabled={decorationUi.isDisabled}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </article>
+          )
+        })}
+        </div>
+      </div>
+
+      <div className="section-head-with-actions design-full-head">
+        <p className="group-title design-full-title">Disenos completos (precio unico)</p>
+
+        <div className="carousel-actions" aria-label="Controles de disenos completos">
+          <button
+            type="button"
+            className="carousel-arrow"
+            onClick={() => scrollFullTrack(-1)}
+            disabled={!canScrollFullLeft}
+            aria-label="Ver disenos completos anteriores"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="carousel-arrow"
+            onClick={() => scrollFullTrack(1)}
+            disabled={!canScrollFullRight}
+            aria-label="Ver disenos completos siguientes"
+          >
+            →
+          </button>
+        </div>
+      </div>
+
+      <div className="design-carousel">
+        <div className="design-track design-full-track" ref={fullTrackRef}>
+        {fullDesignOptions.map((item) => {
+          const isSelected = (decorationCounts[item.name] || 0) > 0
+          const qty = isSelected ? 1 : 0
+          const decorationUi = decorationState[item.name] || {
+            badge: null,
+            isDisabled: false,
+          }
+
+          return (
+            <article key={item.name} className="design-card">
+              <img src={item.image} alt={item.name} loading="lazy" />
+              <div className="design-body">
+                <h3>{item.name}</h3>
+                <p>{formatCurrency(decorationPrices[item.name] || 0)} precio fijo</p>
+                <div className="qty-control">
+                  <span>Seleccion</span>
+                  <div>
+                    <button
+                      onClick={() => onSetFullDesignSelected(item.name, false)}
+                      disabled={!isSelected}
+                    >
+                      -
+                    </button>
+                    <strong>{qty}</strong>
+                    <button
+                      onClick={() => onSetFullDesignSelected(item.name, true)}
+                      disabled={isSelected || decorationUi.isDisabled}
                     >
                       +
                     </button>

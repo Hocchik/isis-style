@@ -10,8 +10,8 @@ const basePriceTables = {
   DECORATION_PRICES: {
     Espejo: 8,
     Aurora: 12,
+    'Diseno completo de francesas': 25,
   },
-  TONE_EXTRA_PRICE: 5,
   CHANGE_SHAPE_PRICE: 10,
   RETIRO_PRICES: {
     none: 0,
@@ -22,6 +22,7 @@ const basePriceTables = {
     none: 0,
     acrilico: 15,
     polygel: 17,
+    'builder-gel': 19,
   },
   NON_COMBINABLE_DECORATIONS: {},
 }
@@ -35,7 +36,6 @@ describe('calculateEstimate', () => {
         length: 3,
         decorationCounts: { Espejo: 2, Aurora: 1 },
         selectionOrder: ['Espejo', 'Aurora'],
-        extraTones: 0,
         changeShape: false,
         retiroType: 'none',
         reposicionType: 'none',
@@ -55,7 +55,6 @@ describe('calculateEstimate', () => {
         length: 3,
         decorationCounts: { Aurora: 1, Espejo: 2 },
         selectionOrder: ['Aurora', 'Espejo'],
-        extraTones: 0,
         changeShape: false,
         retiroType: 'none',
         reposicionType: 'none',
@@ -77,7 +76,6 @@ describe('calculateEstimate', () => {
         length: 99,
         decorationCounts: { Espejo: 1, Aurora: 3 },
         selectionOrder: ['Espejo', 'Aurora'],
-        extraTones: 2,
         changeShape: true,
         retiroType: 'gel',
         reposicionType: 'polygel',
@@ -86,7 +84,7 @@ describe('calculateEstimate', () => {
     )
 
     expect(result.ui.effectiveLength).toBe(6)
-    expect(result.total).toBe(184)
+    expect(result.total).toBe(174)
   })
 
   test('maneja precios faltantes con 0 sin mutar entradas', () => {
@@ -96,7 +94,6 @@ describe('calculateEstimate', () => {
       length: 2,
       decorationCounts: { EfectoX: 2 },
       selectionOrder: ['EfectoX'],
-      extraTones: 1,
       changeShape: true,
       retiroType: 'acrilico',
       reposicionType: 'acrilico',
@@ -106,7 +103,6 @@ describe('calculateEstimate', () => {
       PRICES_NO_LENGTH: {},
       PRICES_WITH_LENGTH: {},
       DECORATION_PRICES: {},
-      TONE_EXTRA_PRICE: undefined,
       CHANGE_SHAPE_PRICE: undefined,
       RETIRO_PRICES: {},
       REPOSICION_PRICES: {},
@@ -121,5 +117,70 @@ describe('calculateEstimate', () => {
     expect(result.messages.some((message) => message.code === 'MISSING_TECHNIQUE_PRICE')).toBe(true)
     expect(result.messages.some((message) => message.code === 'MISSING_EXTRA_PRICE')).toBe(true)
     expect(snapshotAfter).toBe(snapshotBefore)
+  })
+
+  test('acepta maintenance como tecnica sin largo', () => {
+    const result = calculateEstimate(
+      {
+        techniqueKind: 'maintenance',
+        techniqueName: 'Kapping Gel',
+        length: 6,
+        decorationCounts: {},
+        selectionOrder: [],
+        changeShape: false,
+        retiroType: 'none',
+        reposicionType: 'none',
+      },
+      basePriceTables,
+    )
+
+    expect(result.total).toBe(85)
+    expect(result.items[0]?.name).toBe('Mantenimiento: Kapping Gel')
+  })
+
+  test('cobra disenos completos una sola vez y sin cantidad', () => {
+    const result = calculateEstimate(
+      {
+        techniqueKind: 'with-length',
+        techniqueName: 'Acrilico',
+        length: 3,
+        decorationCounts: { 'Diseno completo de francesas': 3 },
+        selectionOrder: ['Diseno completo de francesas'],
+        changeShape: false,
+        retiroType: 'none',
+        reposicionType: 'none',
+      },
+      basePriceTables,
+    )
+
+    const fullDesign = result.items.find((item) => item.name === 'Diseno completo de francesas')
+
+    expect(fullDesign?.qty).toBe(1)
+    expect(fullDesign?.chargedQty).toBe(1)
+    expect(fullDesign?.freeQty).toBe(0)
+    expect(fullDesign?.lineTotal).toBe(25)
+    expect(result.total).toBe(95)
+  })
+
+  test('calcula reposicion builder-gel correctamente', () => {
+    const result = calculateEstimate(
+      {
+        techniqueKind: 'with-length',
+        techniqueName: 'Acrilico',
+        length: 3,
+        decorationCounts: {},
+        selectionOrder: [],
+        changeShape: false,
+        retiroType: 'none',
+        reposicionType: 'builder-gel',
+        reposicionQty: 2,
+      },
+      basePriceTables,
+    )
+
+    const reposicion = result.items.find((item) => item.name === 'Reposicion (builder-gel)')
+
+    expect(reposicion?.lineTotal).toBe(38)
+    expect(result.total).toBe(108)
   })
 })

@@ -3,6 +3,7 @@ export function TechnicalMasterySection({
   techniqueName,
   noLengthTechniques,
   withLengthTechniques,
+  maintenanceTechniques,
   priceTables,
   lengthLevels,
   lengthLevel,
@@ -12,8 +13,15 @@ export function TechnicalMasterySection({
 }) {
   const hasOverflowNoLength = noLengthTechniques.length > 5
   const hasOverflowWithLength = withLengthTechniques.length > 5
+  const hasOverflowMaintenance = maintenanceTechniques.length > 5
+  const isLengthDisabled = techniqueKind === 'no-length' || techniqueKind === 'maintenance'
+  const withLengthPrices = priceTables.PRICES_WITH_LENGTH[techniqueName] || {}
   const minLength = lengthLevels[0] || 1
   const maxLength = lengthLevels[lengthLevels.length - 1] || 6
+
+  function getLengthPrice(level) {
+    return formatCurrency(withLengthPrices[level] || 0)
+  }
 
   const mobileNoLengthValue =
     techniqueKind === 'no-length'
@@ -24,6 +32,11 @@ export function TechnicalMasterySection({
     techniqueKind === 'with-length'
       ? techniqueName
       : (withLengthTechniques[0] && withLengthTechniques[0].name) || ''
+
+  const mobileMaintenanceValue =
+    techniqueKind === 'maintenance'
+      ? techniqueName
+      : (maintenanceTechniques[0] && maintenanceTechniques[0].name) || ''
 
   return (
     <section className="section-block">
@@ -59,7 +72,7 @@ export function TechnicalMasterySection({
                 }
                 onClick={() => onTechniquePick('no-length', item.name)}
               >
-                <strong>{item.name}</strong>
+                <p className="service-card-title">{item.name}</p>
                 <small>{formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}</small>
               </button>
             ))}
@@ -68,7 +81,7 @@ export function TechnicalMasterySection({
         </article>
 
         <article className="service-column">
-          <p className="group-title">Especiales con largo y mantenimiento</p>
+          <p className="group-title">Especiales con largo</p>
           <div className="mobile-technique-select-wrap">
             <select
               className="mobile-technique-select"
@@ -94,12 +107,47 @@ export function TechnicalMasterySection({
                 }
                 onClick={() => onTechniquePick('with-length', item.name)}
               >
-                <strong>{item.name}</strong>
+                <p className="service-card-title">{item.name}</p>
                 <small>Desde {formatCurrency(priceTables.PRICES_WITH_LENGTH[item.name]?.[1] || 0)}</small>
               </button>
             ))}
           </div>
           {hasOverflowWithLength ? <p className="scroll-hint">Desliza para ver mas opciones</p> : null}
+        </article>
+
+        <article className="service-column">
+          <p className="group-title">Mantenimientos</p>
+          <div className="mobile-technique-select-wrap">
+            <select
+              className="mobile-technique-select"
+              value={mobileMaintenanceValue}
+              onChange={(event) => onTechniquePick('maintenance', event.target.value)}
+            >
+              {maintenanceTechniques.map((item) => (
+                <option key={item.id} value={item.name}>
+                  {item.name} - {formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="cards-grid cards-grid-limited desktop-technique-list">
+            {maintenanceTechniques.map((item) => (
+              <button
+                key={item.id}
+                className={
+                  techniqueKind === 'maintenance' && techniqueName === item.name
+                    ? 'service-card service-card-compact active'
+                    : 'service-card service-card-compact'
+                }
+                onClick={() => onTechniquePick('maintenance', item.name)}
+              >
+                <p className="service-card-title">{item.name}</p>
+                <small>{formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}</small>
+              </button>
+            ))}
+          </div>
+          {hasOverflowMaintenance ? <p className="scroll-hint">Desliza para ver mas opciones</p> : null}
         </article>
       </div>
 
@@ -107,6 +155,11 @@ export function TechnicalMasterySection({
         <div>
           <strong>Seleccionar Largo</strong>
           <p>Precision arquitectonica del nivel 1 al 6</p>
+          <p className="length-price-preview">
+            {isLengthDisabled
+              ? 'Disponible para tecnicas con largo'
+              : `Nivel ${lengthLevel}: ${getLengthPrice(lengthLevel)}`}
+          </p>
         </div>
         <div className="levels desktop-length-levels">
           {lengthLevels.map((item) => (
@@ -114,9 +167,10 @@ export function TechnicalMasterySection({
               key={item}
               onClick={() => onLengthPick(item)}
               className={lengthLevel === item ? 'level active' : 'level'}
-              disabled={techniqueKind === 'no-length'}
+              disabled={isLengthDisabled}
             >
-              {item}
+              <span className="level-number">{item}</span>
+              <small className="level-price">{getLengthPrice(item)}</small>
             </button>
           ))}
         </div>
@@ -130,7 +184,7 @@ export function TechnicalMasterySection({
             value={lengthLevel}
             className="mobile-length-range"
             onChange={(event) => onLengthPick(Number(event.target.value))}
-            disabled={techniqueKind === 'no-length'}
+            disabled={isLengthDisabled}
             aria-label="Seleccionar nivel de largo"
           />
           <div className="mobile-length-scale" aria-hidden="true">
@@ -140,6 +194,9 @@ export function TechnicalMasterySection({
               </span>
             ))}
           </div>
+          <p className="length-price-mobile">
+            {isLengthDisabled ? 'Selecciona una tecnica con largo' : `Precio: ${getLengthPrice(lengthLevel)}`}
+          </p>
         </div>
       </div>
     </section>

@@ -7,6 +7,9 @@ export const NO_LENGTH_TECHNIQUES = [
   { id: 'kapping-acrilico', name: 'Kapping de acrilico' },
   { id: 'kapping-polygel', name: 'Kapping de polygel' },
   { id: 'tecnica-hibrida', name: 'Tecnica Hibrida' },
+]
+
+export const MANTENIMIENTOS_TECHNIQUES = [
   { id: 'mantenimiento-acrilico', name: 'Mantenimiento de Acrilico' },
   { id: 'mantenimiento-rubber-gel', name: 'Mantenimiento de Rubber gel' },
   { id: 'mantenimiento-builder-gel', name: 'Mantenimiento de Builder gel' },
@@ -24,10 +27,10 @@ export const WITH_LENGTH_TECHNIQUES = [
 const DECORATION_PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=80'
 
-export const DECORATION_OPTIONS = [
-  { name: 'Espejo', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Aurora', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Azucar', image: DECORATION_PLACEHOLDER_IMAGE },
+export const SIMPLE_DECORATION_OPTIONS = [
+  { name: 'Efecto Espejo', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Efecto Aurora', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Efecto Azucar', image: DECORATION_PLACEHOLDER_IMAGE },
   { name: 'Carey', image: DECORATION_PLACEHOLDER_IMAGE },
   { name: 'Blooming', image: DECORATION_PLACEHOLDER_IMAGE },
   { name: 'Polka dots', image: DECORATION_PLACEHOLDER_IMAGE },
@@ -42,12 +45,17 @@ export const DECORATION_OPTIONS = [
   { name: 'Naturaleza muerta', image: DECORATION_PLACEHOLDER_IMAGE },
   { name: 'Dijes', image: DECORATION_PLACEHOLDER_IMAGE },
   { name: 'Baby boomer', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseno de piedras', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseno de piedras elaborado', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseno completo Ojo de gato', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseno completo de francesas', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseno completo de color entero', image: DECORATION_PLACEHOLDER_IMAGE },
 ]
+
+export const FULL_DESIGN_OPTIONS = [
+  { name: 'Diseño de piedras', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Diseño de piedras elaborado', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Diseño completo Ojo de gato', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Diseño completo de francesas', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Diseño completo de color entero', image: DECORATION_PLACEHOLDER_IMAGE },
+]
+
+export const DECORATION_OPTIONS = [...SIMPLE_DECORATION_OPTIONS, ...FULL_DESIGN_OPTIONS]
 
 export const CARE_OPTIONS = [
   {
@@ -67,6 +75,13 @@ export const CARE_OPTIONS = [
     id: 'retiro-gel',
     kind: 'retiro',
     value: 'gel',
+    name: 'Retiro Gel',
+    description: 'Retiro de sistema en gel.',
+  },
+  {
+    id: 'retiro-gel-semipermanente',
+    kind: 'retiro',
+    value: 'gel-semipermanente',
     name: 'Retiro Gel semipermanente',
     description: 'Retiro de sistema en gel semipermanente.',
   },
@@ -84,6 +99,14 @@ export const CARE_OPTIONS = [
     name: 'Reposicion Polygel',
     description: 'Reposicion por una en sistema polygel.',
   },
+  {
+    id: 'reposicion-builder-gel',
+    kind: 'reposicion',
+    value: 'builder-gel',
+    name: 'Reposicion Builder Gel',
+    description: 'Reposicion por una en sistema builder gel.',
+  }
+
 ]
 
 export const PRICE_TABLES = {
@@ -102,65 +125,66 @@ export const PRICE_TABLES = {
     'Mantenimiento de Polygel': 55,
   },
   PRICES_WITH_LENGTH: {
-    Acrilico: { 1: 60, 2: 60, 3: 70, 4: 80, 5: 90, 6: 100 },
+    'Acrilico': { 1: 60, 2: 60, 3: 70, 4: 80, 5: 90, 6: 100 },
     'Builder Gel': { 1: 70, 2: 70, 3: 70 },
-    Polygel: { 1: 70, 2: 70, 3: 80, 4: 90, 5: 100, 6: 110 },
+    'Polygel': { 1: 70, 2: 70, 3: 80, 4: 90, 5: 100, 6: 110 },
     'Esculpidas en acrilico': { 1: 70, 2: 70, 3: 80, 4: 90, 5: 100, 6: 110 },
     'Esculpidas en polygel': { 1: 80, 2: 80, 3: 90, 4: 100, 5: 110, 6: 120 },
   },
   DECORATION_PRICES: {
-    Espejo: 3,
-    Aurora: 3,
-    Azucar: 3,
-    Carey: 15,
-    Blooming: 5,
+    'Efecto Espejo': 3,
+    'Efecto Aurora': 3,
+    'Efecto Azucar': 3,
+    'Carey': 15,
+    'Blooming': 5,
     'Polka dots': 5,
-    Marmol: 5,
+    'Marmol': 5,
     'Ojo de gato': 5,
-    Relieve: 10,
+    'Relieve': 10,
     '3D': 10,
     'Francesas (4)': 10,
     'Nail art simple': 10,
     'Nail art complicado': 20,
-    Encapsulado: 5,
+    'Encapsulado': 5,
     'Naturaleza muerta': 5,
-    Dijes: 15,
+    'Dijes': 15,
     'Baby boomer': 10,
-    'Diseno de piedras': 10,
-    'Diseno de piedras elaborado': 20,
-    'Diseno completo Ojo de gato': 20,
-    'Diseno completo de francesas': 15,
-    'Diseno completo de color entero': 10,
+    'Diseño de piedras': 10,
+    'Diseño de piedras elaborado': 20,
+    'Diseño completo Ojo de gato': 20,
+    'Diseño completo de francesas': 15,
+    'Diseño completo de color entero': 10,
   },
-  TONE_EXTRA_PRICE: 5,
-  CHANGE_SHAPE_PRICE: 15,
+  CHANGE_SHAPE_PRICE: 10,
   RETIRO_PRICES: {
     none: 0,
-    acrilico: 20,
-    gel: 10,
+    'acrilico': 20,
+    'gel': 15,
+    'gel-semipermanente': 10,
   },
   REPOSICION_PRICES: {
     none: 0,
-    acrilico: 6,
-    polygel: 7,
+    'acrilico': 6,
+    'polygel': 7,
+    'builder-gel': 70,
   },
   NON_COMBINABLE_DECORATIONS: {
-    Espejo: [],
-    Aurora: [],
-    Azucar: [],
-    Carey: [],
-    Blooming: [],
+    'Espejo': [],
+    'Aurora': [],
+    'Azucar': [],
+    'Carey': [],
+    'Blooming': [],
     'Polka dots': [],
-    Marmol: [],
+    'Marmol': [],
     'Ojo de gato': [],
-    Relieve: [],
+    'Relieve': [],
     '3D': [],
     'Francesas (4)': [],
     'Nail art simple': [],
     'Nail art complicado': [],
-    Encapsulado: [],
+    'Encapsulado': [],
     'Naturaleza muerta': [],
-    Dijes: [],
+    'Dijes': [],
     'Baby boomer': [],
     'Diseno de piedras': [],
     'Diseno de piedras elaborado': [],

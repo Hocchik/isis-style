@@ -10,7 +10,6 @@ const DEFAULT_INPUTS = {
   length: 1,
   decorationCounts: {},
   selectionOrder: [],
-  extraTones: 0,
   changeShape: false,
   retiroType: 'none',
   reposicionType: 'none',
@@ -20,10 +19,9 @@ const DEFAULT_PRICE_TABLES = {
   PRICES_NO_LENGTH: {},
   PRICES_WITH_LENGTH: {},
   DECORATION_PRICES: {},
-  TONE_EXTRA_PRICE: 0,
   CHANGE_SHAPE_PRICE: 0,
   RETIRO_PRICES: { none: 0, acrilico: 0, gel: 0 },
-  REPOSICION_PRICES: { none: 0, acrilico: 0, polygel: 0 },
+  REPOSICION_PRICES: { none: 0, acrilico: 0, polygel: 0, 'builder-gel': 0 },
   NON_COMBINABLE_DECORATIONS: {},
 }
 
@@ -95,17 +93,20 @@ function buildDecorationState(names, counts, nonCombinable, freeAllocation) {
   return state
 }
 
+function isFullDesignDecoration(name) {
+  return typeof name === 'string' && name.startsWith('Diseno')
+}
+
 /**
  * @typedef {Object} EstimateInput
- * @property {'no-length'|'with-length'} techniqueKind
+ * @property {'no-length'|'with-length'|'maintenance'} techniqueKind
  * @property {string} techniqueName
  * @property {number} length
  * @property {Record<string, number>} decorationCounts
  * @property {string[]} selectionOrder
- * @property {number} extraTones
  * @property {boolean} changeShape
  * @property {'none'|'acrilico'|'gel'} retiroType
- * @property {'none'|'acrilico'|'polygel'} reposicionType
+ * @property {'none'|'acrilico'|'polygel'|'builder-gel'} reposicionType
  * @property {number} reposicionQty
  */
 
@@ -114,7 +115,6 @@ function buildDecorationState(names, counts, nonCombinable, freeAllocation) {
  * @property {Record<string, number>} PRICES_NO_LENGTH
  * @property {Record<string, Record<number, number>>} PRICES_WITH_LENGTH
  * @property {Record<string, number>} DECORATION_PRICES
- * @property {number} TONE_EXTRA_PRICE
  * @property {number} CHANGE_SHAPE_PRICE
  * @property {Record<string, number>} RETIRO_PRICES
  * @property {Record<string, number>} REPOSICION_PRICES
@@ -173,7 +173,8 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
   let subtotalCents = 0
   let effectiveLength = clampNonNegativeInt(inputs.length, 1)
 
-  if (inputs.techniqueKind === 'no-length') {
+  if (inputs.techniqueKind === 'no-length' || inputs.techniqueKind === 'maintenance') {
+    const kindLabel = inputs.techniqueKind === 'maintenance' ? 'Mantenimiento' : 'Tecnica'
     const techniquePrice = getSafePrice(
       tables.PRICES_NO_LENGTH?.[inputs.techniqueName],
       messages,
@@ -184,7 +185,7 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
     subtotalCents += lineTotalCents
 
     items.push({
-      name: `Tecnica: ${inputs.techniqueName || 'sin seleccionar'}`,
+      name: `${kindLabel}: ${inputs.techniqueName || 'sin seleccionar'}`,
       unitPrice: techniquePrice,
       qty: 1,
       freeQty: 0,
@@ -279,7 +280,11 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
     }
   }
 
-  if (inputs.techniqueKind !== 'no-length' && inputs.techniqueKind !== 'with-length') {
+  if (
+    inputs.techniqueKind !== 'no-length' &&
+    inputs.techniqueKind !== 'with-length' &&
+    inputs.techniqueKind !== 'maintenance'
+  ) {
     pushMessage(messages, 'warning', 'INVALID_TECHNIQUE_KIND', 'Technique kind is invalid. Falling back to 0.')
   }
 
@@ -298,15 +303,29 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
   let remainingFree = FREE_DECORATION_UNITS
 
   for (const name of orderedNames) {
-    const qty = clampNonNegativeInt(normalizedDecorationCounts[name], 0)
+    const rawQty = clampNonNegativeInt(normalizedDecorationCounts[name], 0)
+    const isFullDesign = isFullDesignDecoration(name)
+    const qty = isFullDesign ? Math.min(rawQty, 1) : rawQty
+
+    if (isFullDesign && rawQty > 1) {
+      pushMessage(
+        messages,
+        'info',
+        'NORMALIZED_QTY',
+        `Decoration quantity for ${name} was normalized to 1.`,
+      )
+    }
+
     if (qty <= 0) {
       freeAllocation[name] = 0
       continue
     }
 
-    const freeHere = Math.min(qty, remainingFree)
+    const freeHere = isFullDesign ? 0 : Math.min(qty, remainingFree)
     const chargedQty = qty - freeHere
-    remainingFree -= freeHere
+    if (!isFullDesign) {
+      remainingFree -= freeHere
+    }
     freeAllocation[name] = freeHere
 
     const unitPrice = getSafePrice(
@@ -327,29 +346,6 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
       chargedQty,
       lineTotal: fromCents(lineTotalCents),
       badge: freeHere > 0 ? 'incluido' : null,
-      isDisabled: false,
-    })
-  }
-
-  const toneUnitPrice = getSafePrice(
-    tables.TONE_EXTRA_PRICE,
-    messages,
-    'MISSING_EXTRA_PRICE',
-    'Extra tones',
-  )
-  const toneQty = clampNonNegativeInt(inputs.extraTones, 0)
-  if (toneQty > 0) {
-    const lineTotalCents = toCents(toneUnitPrice) * toneQty
-    subtotalCents += lineTotalCents
-
-    items.push({
-      name: 'Tonos extra',
-      unitPrice: toneUnitPrice,
-      qty: toneQty,
-      freeQty: 0,
-      chargedQty: toneQty,
-      lineTotal: fromCents(lineTotalCents),
-      badge: null,
       isDisabled: false,
     })
   }

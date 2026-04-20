@@ -44,6 +44,7 @@
   font-family: var(--serif-alt);
   font-style: italic;
   font-weight: 500;
+  font-size: 0.76em;
 }
 
 .lead {
@@ -82,7 +83,7 @@
 
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 
@@ -158,13 +159,17 @@
   padding: 12px 14px;
 }
 
-.service-card-compact strong {
-  font-size: 20px;
+.service-card-title {
+  margin: 0;  
+} 
+
+.service-card-compact .service-card-title {
+  font-size: 17px;
   line-height: 1.1;
 }
 
 .service-card-compact small {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.2;
 }
 
@@ -176,6 +181,11 @@
 .service-card small {
   font-size: 19px;
   color: #5c5c5c;
+}
+
+.service-card .service-card-title {
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .service-card.active {
@@ -212,6 +222,12 @@
   font-size: 15px;
 }
 
+.length-price-preview {
+  font-size: 13px;
+  color: #2d5f4d;
+  font-weight: 600;
+}
+
 .levels {
   display: grid;
   grid-template-columns: repeat(6, 46px);
@@ -224,11 +240,34 @@
   height: 42px;
   cursor: pointer;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+.level-number {
+  line-height: 1;
+}
+
+.level-price {
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 600;
 }
 
 .level.active {
   background: #007247;
   color: #fff;
+}
+
+.length-price-mobile {
+  margin: 0;
+  font-size: 13px;
+  color: #2d5f4d;
+  font-weight: 600;
+  text-align: center;
 }
 
 .level:disabled {
@@ -255,6 +294,19 @@
 }
 
 .design-track .design-card {
+  flex: 0 0 calc((100% - 28px) / 3);
+  scroll-snap-align: start;
+}
+
+.design-full-head {
+  margin-top: 18px;
+}
+
+.design-full-head .design-full-title {
+  margin-top: 0;
+}
+
+.design-full-track .design-card {
   flex: 0 0 calc((100% - 28px) / 3);
   scroll-snap-align: start;
 }
@@ -320,6 +372,31 @@
   color: #007247;
   font-size: 20px;
   font-weight: 600;
+}
+
+.design-full-title {
+  margin-top: 20px;
+}
+
+.design-toggle {
+  width: 100%;
+  border: 1px solid #0a7a4a;
+  background: #fff;
+  color: #0a7a4a;
+  min-height: 34px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.design-toggle.active {
+  background: #0a7a4a;
+  color: #fff;
+}
+
+.design-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .included-badge {
@@ -1050,12 +1127,12 @@
     padding: 12px 13px;
   }
 
-  .service-card-compact strong {
-    font-size: 19px;
+  .service-card-compact .service-card-title {
+    font-size: 16px;
   }
 
   .service-card-compact small {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .length-picker {
@@ -1069,6 +1146,11 @@
 
   .length-picker p {
     font-size: 13px;
+  }
+
+  .length-price-preview,
+  .length-price-mobile {
+    font-size: 12px;
   }
 
   .levels {
@@ -1105,6 +1187,10 @@
   .level {
     height: 38px;
     font-size: 15px;
+  }
+
+  .level-price {
+    font-size: 8px;
   }
 
   .design-track {
@@ -1364,12 +1450,12 @@
     gap: 22px;
   }
 
-  .service-card-compact strong {
-    font-size: 18px;
+  .service-card-compact .service-card-title {
+    font-size: 15px;
   }
 
   .service-card-compact small {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .mobile-technique-select {

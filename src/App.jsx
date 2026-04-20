@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import {
   DECORATION_OPTIONS,
+  FULL_DESIGN_OPTIONS,
+  MANTENIMIENTOS_TECHNIQUES,
   NO_LENGTH_TECHNIQUES,
   PRICE_TABLES,
+  SIMPLE_DECORATION_OPTIONS,
   WITH_LENGTH_TECHNIQUES,
 } from './config/pricing'
 import {
@@ -14,7 +17,6 @@ import {
 } from './domain/estimateHandlers'
 import { TechnicalMasterySection } from './components/TechnicalMasterySection'
 import { ArtistryDesignSection } from './components/ArtistryDesignSection'
-import { ChromaticLayersSection } from './components/ChromaticLayersSection'
 import { ComplementaryCareSection } from './components/ComplementaryCareSection'
 import { SummarySelectionSection } from './components/SummarySelectionSection'
 
@@ -28,12 +30,11 @@ const INITIAL_ESTIMATE_STATE = {
   techniqueKind: 'with-length',
   techniqueName: 'Acrilico',
   lengthLevel: 3,
-  extraTones: 0,
   decorationCounts: {
     ...DEFAULT_DECORATION_COUNTS,
-    Espejo: 2,
+    Espejo: 0,
     Aurora: 0,
-    Azucar: 1,
+    Azucar: 0,
   },
   selectionOrder: ['Espejo', 'Azucar'],
   changeShape: false,
@@ -46,7 +47,6 @@ function App() {
   const [techniqueKind, setTechniqueKind] = useState(INITIAL_ESTIMATE_STATE.techniqueKind)
   const [techniqueName, setTechniqueName] = useState(INITIAL_ESTIMATE_STATE.techniqueName)
   const [lengthLevel, setLengthLevel] = useState(INITIAL_ESTIMATE_STATE.lengthLevel)
-  const [extraTones, setExtraTones] = useState(INITIAL_ESTIMATE_STATE.extraTones)
   const [decorationCounts, setDecorationCounts] = useState(INITIAL_ESTIMATE_STATE.decorationCounts)
   const [selectionOrder, setSelectionOrder] = useState(INITIAL_ESTIMATE_STATE.selectionOrder)
   const [changeShape, setChangeShape] = useState(INITIAL_ESTIMATE_STATE.changeShape)
@@ -63,7 +63,6 @@ function App() {
     setLengthLevel(Number.isInteger(saved.length) ? saved.length : 3)
     setDecorationCounts({ ...DEFAULT_DECORATION_COUNTS, ...(saved.decorationCounts || {}) })
     setSelectionOrder(Array.isArray(saved.selectionOrder) ? saved.selectionOrder : [])
-    setExtraTones(Number.isInteger(saved.extraTones) ? saved.extraTones : 0)
     setChangeShape(Boolean(saved.changeShape))
     setRetiroType(saved.retiroType || 'none')
     setReposicionType(saved.reposicionType || 'acrilico')
@@ -77,7 +76,6 @@ function App() {
       length: lengthLevel,
       decorationCounts,
       selectionOrder,
-      extraTones,
       changeShape,
       retiroType,
       reposicionType,
@@ -86,7 +84,6 @@ function App() {
     [
       changeShape,
       decorationCounts,
-      extraTones,
       lengthLevel,
       reposicionType,
       reposicionQty,
@@ -123,11 +120,21 @@ function App() {
     }
   }
 
+  function setFullDesignSelected(name, isSelected) {
+    setDecorationCounts((prev) => ({
+      ...prev,
+      [name]: isSelected ? 1 : 0,
+    }))
+
+    if (isSelected) {
+      setSelectionOrder((prev) => (prev.includes(name) ? prev : [...prev, name]))
+    }
+  }
+
   function resetEstimateToInitial() {
     setTechniqueKind(INITIAL_ESTIMATE_STATE.techniqueKind)
     setTechniqueName(INITIAL_ESTIMATE_STATE.techniqueName)
     setLengthLevel(INITIAL_ESTIMATE_STATE.lengthLevel)
-    setExtraTones(INITIAL_ESTIMATE_STATE.extraTones)
     setDecorationCounts({ ...INITIAL_ESTIMATE_STATE.decorationCounts })
     setSelectionOrder([...INITIAL_ESTIMATE_STATE.selectionOrder])
     setChangeShape(INITIAL_ESTIMATE_STATE.changeShape)
@@ -142,7 +149,7 @@ function App() {
         <header className="hero">
           <p className="eyebrow">Experiencia Interactiva</p>
           <h1>
-            Estilos de Isis
+            Isis Styles
             <span>Asistente de Precios</span>
           </h1>
           <p className="lead">
@@ -157,6 +164,7 @@ function App() {
           techniqueName={techniqueName}
           noLengthTechniques={NO_LENGTH_TECHNIQUES}
           withLengthTechniques={WITH_LENGTH_TECHNIQUES}
+          maintenanceTechniques={MANTENIMIENTOS_TECHNIQUES}
           priceTables={PRICE_TABLES}
           lengthLevels={LENGTH_LEVELS}
           lengthLevel={lengthLevel}
@@ -166,18 +174,13 @@ function App() {
         />
 
         <ArtistryDesignSection
-          decorationOptions={DECORATION_OPTIONS}
+          simpleDecorationOptions={SIMPLE_DECORATION_OPTIONS}
+          fullDesignOptions={FULL_DESIGN_OPTIONS}
           decorationCounts={decorationCounts}
           decorationState={estimate.ui.decorationState}
           decorationPrices={PRICE_TABLES.DECORATION_PRICES}
           onUpdateDecorationQty={updateDecorationQty}
-          formatCurrency={formatCurrency}
-        />
-
-        <ChromaticLayersSection
-          extraTones={extraTones}
-          onChangeExtraTones={setExtraTones}
-          tonePrice={PRICE_TABLES.TONE_EXTRA_PRICE}
+          onSetFullDesignSelected={setFullDesignSelected}
           formatCurrency={formatCurrency}
         />
 

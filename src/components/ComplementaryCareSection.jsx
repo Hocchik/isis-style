@@ -10,13 +10,45 @@ export function ComplementaryCareSection({
   prices,
   formatCurrency,
 }) {
+  const retiroLabelByType = {
+    acrilico: 'Acrilico',
+    gel: 'Gel',
+    'gel-semipermanente': 'Gel semipermanente',
+  }
+  const retiroOrder = ['acrilico', 'gel', 'gel-semipermanente']
+  const retiroOptions = Object.entries(prices.RETIRO_PRICES || {})
+    .filter(([type]) => type !== 'none')
+    .sort(([left], [right]) => {
+      const leftIndex = retiroOrder.indexOf(left)
+      const rightIndex = retiroOrder.indexOf(right)
+      const safeLeft = leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex
+      const safeRight = rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex
+      return safeLeft - safeRight
+    })
+
+  const reposicionLabelByType = {
+    acrilico: 'Acrilico',
+    polygel: 'Polygel',
+    'builder-gel': 'Builder Gel',
+  }
+  const reposicionOrder = ['acrilico', 'polygel', 'builder-gel']
+  const reposicionOptions = Object.entries(prices.REPOSICION_PRICES || {})
+    .filter(([type]) => type !== 'none')
+    .sort(([left], [right]) => {
+      const leftIndex = reposicionOrder.indexOf(left)
+      const rightIndex = reposicionOrder.indexOf(right)
+      const safeLeft = leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex
+      const safeRight = rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex
+      return safeLeft - safeRight
+    })
+
   const reposicionUnit = prices.REPOSICION_PRICES?.[reposicionType] || 0
   const reposicionTotal = reposicionUnit * reposicionQty
 
   return (
     <section className="section-block">
       <h2>
-        <span>04</span> Servicios Complementarios
+        <span>03</span> Servicios Complementarios
       </h2>
       <div className="care-layout">
         <article className={changeShape ? 'care-panel active' : 'care-panel'}>
@@ -42,39 +74,23 @@ export function ComplementaryCareSection({
           <p>Remocion profesional para mantener la placa natural.</p>
 
           <div className="retiro-options" role="radiogroup" aria-label="Tipo de retiro">
-            <label className="retiro-option-simple">
-              <input
-                type="radio"
-                name="retiro-type"
-                checked={retiroType === 'acrilico'}
-                onChange={() => onRetiroTypeChange('acrilico')}
-                onClick={(event) => {
-                  if (retiroType === 'acrilico') {
-                    event.preventDefault()
-                    onRetiroTypeChange('none')
-                  }
-                }}
-              />
-              <span>Acrilico</span>
-              <strong>{formatCurrency(prices.RETIRO_PRICES?.acrilico || 0)}</strong>
-            </label>
-
-            <label className="retiro-option-simple">
-              <input
-                type="radio"
-                name="retiro-type"
-                checked={retiroType === 'gel'}
-                onChange={() => onRetiroTypeChange('gel')}
-                onClick={(event) => {
-                  if (retiroType === 'gel') {
-                    event.preventDefault()
-                    onRetiroTypeChange('none')
-                  }
-                }}
-              />
-              <span>Gel semipermanente</span>
-              <strong>{formatCurrency(prices.RETIRO_PRICES?.gel || 0)}</strong>
-            </label>
+            {retiroOptions.map(([type, price]) => (
+              <label key={type} className="retiro-option-simple">
+                <input
+                  type="radio"
+                  name="retiro-type"
+                  checked={retiroType === type}
+                  onChange={() => onRetiroTypeChange(type)}
+                  onClick={() => {
+                    if (retiroType === type) {
+                      onRetiroTypeChange('none')
+                    }
+                  }}
+                />
+                <span>{retiroLabelByType[type] || type}</span>
+                <strong>{formatCurrency(price || 0)}</strong>
+              </label>
+            ))}
           </div>
 
           <small className="retiro-state">
@@ -93,20 +109,16 @@ export function ComplementaryCareSection({
 
             <div className="reposicion-controls">
               <div className="reposicion-tabs">
-                <button
-                  type="button"
-                  className={reposicionType === 'acrilico' ? 'reposicion-tab active' : 'reposicion-tab'}
-                  onClick={() => onReposicionTypeChange('acrilico')}
-                >
-                  Acrilico ({formatCurrency(prices.REPOSICION_PRICES?.acrilico || 0)})
-                </button>
-                <button
-                  type="button"
-                  className={reposicionType === 'polygel' ? 'reposicion-tab active' : 'reposicion-tab'}
-                  onClick={() => onReposicionTypeChange('polygel')}
-                >
-                  Polygel ({formatCurrency(prices.REPOSICION_PRICES?.polygel || 0)})
-                </button>
+                {reposicionOptions.map(([type, price]) => (
+                  <button
+                    key={type}
+                    type="button"
+                    className={reposicionType === type ? 'reposicion-tab active' : 'reposicion-tab'}
+                    onClick={() => onReposicionTypeChange(type)}
+                  >
+                    {reposicionLabelByType[type] || type} ({formatCurrency(price || 0)})
+                  </button>
+                ))}
               </div>
 
               <div className="reposicion-action-row">

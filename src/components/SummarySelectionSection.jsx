@@ -41,7 +41,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
         onClick={() => setIsMobileOpen(true)}
         aria-label="Ver reserva y opciones"
       >
-        Calculo
+        Total
       </button>
 
       <button
