@@ -93,16 +93,16 @@ export function ArtistryDesignSection({
     <section className="section-block">
       <div className="section-head-with-actions">
         <h2>
-          <span>02</span> Decoraciones y Diseños
+          <span>02</span> Decoraciones y diseños
         </h2>
 
-        <div className="carousel-actions" aria-label="Controles del carrusel de disenos">
+        <div className="carousel-actions" aria-label="Controles del carrusel de diseños">
           <button
             type="button"
             className="carousel-arrow"
             onClick={() => scrollTrack(-1)}
             disabled={!canScrollLeft}
-            aria-label="Ver disenos anteriores"
+            aria-label="Ver diseños anteriores"
           >
             ←
           </button>
@@ -111,7 +111,7 @@ export function ArtistryDesignSection({
             className="carousel-arrow"
             onClick={() => scrollTrack(1)}
             disabled={!canScrollRight}
-            aria-label="Ver disenos siguientes"
+            aria-label="Ver diseños siguientes"
           >
             →
           </button>
@@ -160,15 +160,15 @@ export function ArtistryDesignSection({
       </div>
 
       <div className="section-head-with-actions design-full-head">
-        <p className="group-title design-full-title">Disenos completos (precio unico)</p>
+        <p className="group-title design-full-title">Diseños completos (precio único)</p>
 
-        <div className="carousel-actions" aria-label="Controles de disenos completos">
+        <div className="carousel-actions" aria-label="Controles de diseños completos">
           <button
             type="button"
             className="carousel-arrow"
             onClick={() => scrollFullTrack(-1)}
             disabled={!canScrollFullLeft}
-            aria-label="Ver disenos completos anteriores"
+            aria-label="Ver diseños completos anteriores"
           >
             ←
           </button>
@@ -177,7 +177,7 @@ export function ArtistryDesignSection({
             className="carousel-arrow"
             onClick={() => scrollFullTrack(1)}
             disabled={!canScrollFullRight}
-            aria-label="Ver disenos completos siguientes"
+            aria-label="Ver diseños completos siguientes"
           >
             →
           </button>
@@ -201,7 +201,7 @@ export function ArtistryDesignSection({
                 <h3>{item.name}</h3>
                 <p>{formatCurrency(decorationPrices[item.name] || 0)} precio fijo</p>
                 <div className="qty-control">
-                  <span>Seleccion</span>
+                  <span>Selección</span>
                   <div>
                     <button
                       onClick={() => onSetFullDesignSelected(item.name, false)}

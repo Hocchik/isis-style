@@ -27,7 +27,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
       link.download = `resumen-precios-${Date.now()}.jpg`
       link.click()
     } catch {
-      setExportError('No se pudo exportar la imagen. Intentalo nuevamente.')
+      setExportError('No se pudo exportar la imagen. Inténtalo nuevamente.')
     } finally {
       setIsExporting(false)
     }
@@ -39,7 +39,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
         type="button"
         className="summary-mobile-trigger"
         onClick={() => setIsMobileOpen(true)}
-        aria-label="Ver reserva y opciones"
+        aria-label="Ver resumen y opciones"
       >
         Total
       </button>
@@ -48,13 +48,13 @@ export function SummarySelectionSection({ estimate, onReset }) {
         type="button"
         className="summary-mobile-overlay"
         onClick={() => setIsMobileOpen(false)}
-        aria-label="Cerrar panel de reserva"
+        aria-label="Cerrar panel de resumen"
       />
 
       <div className="summary-sticky">
         <div className="summary-head-row">
           <div>
-            <h2>Tu Seleccion</h2>
+            <h2>Tu selección</h2>
             <p className="summary-subtitle">Isis Styles</p>
           </div>
           <button
@@ -92,7 +92,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
           </button>
         </div>
 
-        <small>Precio final sujeto a evaluacion presencial.</small>
+        <small>Precio final sujeto a evaluación presencial.</small>
 
         {exportError ? <small className="validation-text">{exportError}</small> : null}
 
@@ -104,8 +104,8 @@ export function SummarySelectionSection({ estimate, onReset }) {
       </div>
 
       <div className="export-jpg-template" ref={exportRef} aria-hidden="true">
-        <p className="export-brand">Isis - Asistente de Precios</p>
-        <h3>Resumen de seleccion</h3>
+        <p className="export-brand">Isis Styles - Asistente de Precios</p>
+        <h3>Resumen de selección</h3>
 
         <ul>
           {estimate.items.map((item, index) => (
@@ -121,7 +121,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
           <strong>{estimate.formattedTotal}</strong>
         </div>
 
-        <small>Plantilla editable para exportacion JPG.</small>
+        <small>Plantilla editable para exportación JPG.</small>
       </div>
     </aside>
   )

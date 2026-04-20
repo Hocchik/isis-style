@@ -11,7 +11,7 @@ export function ComplementaryCareSection({
   formatCurrency,
 }) {
   const retiroLabelByType = {
-    acrilico: 'Acrilico',
+    acrilico: 'Acrílico',
     gel: 'Gel',
     'gel-semipermanente': 'Gel semipermanente',
   }
@@ -27,7 +27,7 @@ export function ComplementaryCareSection({
     })
 
   const reposicionLabelByType = {
-    acrilico: 'Acrilico',
+    acrilico: 'Acrílico',
     polygel: 'Polygel',
     'builder-gel': 'Builder Gel',
   }
@@ -56,7 +56,7 @@ export function ComplementaryCareSection({
             <h3>Cambio de forma</h3>
             <strong>{formatCurrency(prices.CHANGE_SHAPE_PRICE)}</strong>
           </div>
-          <p>Transicion entre perfiles almendra, coffin o cuadrado.</p>
+          <p>Transición entre perfiles almendra, coffin o cuadrado.</p>
 
           <button
             type="button"
@@ -71,7 +71,7 @@ export function ComplementaryCareSection({
           <div className="care-panel-head">
             <h3>Retiros</h3>
           </div>
-          <p>Remocion profesional para mantener la placa natural.</p>
+          <p>Remoción profesional para mantener la placa natural.</p>
 
           <div className="retiro-options" role="radiogroup" aria-label="Tipo de retiro">
             {retiroOptions.map(([type, price]) => (
@@ -104,7 +104,7 @@ export function ComplementaryCareSection({
               <div className="care-panel-head reposicion-head">
                 <h3>Reposiciones</h3>
               </div>
-              <p>Reparacion por una para unidades que requieren reconstruccion.</p>
+              <p>Reparación por uña para unidades que requieren reconstrucción.</p>
             </div>
 
             <div className="reposicion-controls">
@@ -138,7 +138,7 @@ export function ComplementaryCareSection({
                 <strong className="reposicion-total">{formatCurrency(reposicionTotal)}</strong>
               </div>
 
-              <small>Precio por una segun material seleccionado.</small>
+              <small>Precio por uña según el material seleccionado.</small>
 
             </div>
           </div>

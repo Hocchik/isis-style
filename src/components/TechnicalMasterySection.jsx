@@ -46,7 +46,7 @@ export function TechnicalMasterySection({
 
       <div className="service-grid">
         <article className="service-column">
-          <p className="group-title">Basico y especiales sin largo</p>
+          <p className="group-title">Básicas y especiales sin largo</p>
           <div className="mobile-technique-select-wrap">
             <select
               className="mobile-technique-select"
@@ -77,7 +77,7 @@ export function TechnicalMasterySection({
               </button>
             ))}
           </div>
-          {hasOverflowNoLength ? <p className="scroll-hint">Desliza para ver mas opciones</p> : null}
+          {hasOverflowNoLength ? <p className="scroll-hint">Desliza para ver más opciones</p> : null}
         </article>
 
         <article className="service-column">
@@ -112,7 +112,7 @@ export function TechnicalMasterySection({
               </button>
             ))}
           </div>
-          {hasOverflowWithLength ? <p className="scroll-hint">Desliza para ver mas opciones</p> : null}
+          {hasOverflowWithLength ? <p className="scroll-hint">Desliza para ver más opciones</p> : null}
         </article>
 
         <article className="service-column">
@@ -147,17 +147,17 @@ export function TechnicalMasterySection({
               </button>
             ))}
           </div>
-          {hasOverflowMaintenance ? <p className="scroll-hint">Desliza para ver mas opciones</p> : null}
+          {hasOverflowMaintenance ? <p className="scroll-hint">Desliza para ver más opciones</p> : null}
         </article>
       </div>
 
       <div className="length-picker">
         <div>
-          <strong>Seleccionar Largo</strong>
-          <p>Precision arquitectonica del nivel 1 al 6</p>
+          <strong>Seleccionar largo</strong>
+          <p>Precisión arquitectónica del nivel 1 al 6</p>
           <p className="length-price-preview">
             {isLengthDisabled
-              ? 'Disponible para tecnicas con largo'
+              ? 'Disponible para técnicas con largo'
               : `Nivel ${lengthLevel}: ${getLengthPrice(lengthLevel)}`}
           </p>
         </div>
@@ -195,7 +195,7 @@ export function TechnicalMasterySection({
             ))}
           </div>
           <p className="length-price-mobile">
-            {isLengthDisabled ? 'Selecciona una tecnica con largo' : `Precio: ${getLengthPrice(lengthLevel)}`}
+            {isLengthDisabled ? 'Selecciona una técnica con largo' : `Precio: ${getLengthPrice(lengthLevel)}`}
           </p>
         </div>
       </div>

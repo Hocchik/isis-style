@@ -57,7 +57,7 @@ function pushMessage(messages, type, code, message) {
 function getSafePrice(price, messages, code, label) {
   const numeric = Number(price)
   if (!Number.isFinite(numeric)) {
-    pushMessage(messages, 'warning', code, `${label} has no price configured. Falling back to 0.`)
+    pushMessage(messages, 'warning', code, `${label} no tiene un precio configurado. Se usará 0.`)
     return 0
   }
   return numeric
@@ -94,7 +94,7 @@ function buildDecorationState(names, counts, nonCombinable, freeAllocation) {
 }
 
 function isFullDesignDecoration(name) {
-  return typeof name === 'string' && name.startsWith('Diseno')
+  return typeof name === 'string' && (name.startsWith('Diseno') || name.startsWith('Diseño'))
 }
 
 /**
@@ -164,7 +164,7 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
         messages,
         'info',
         'NORMALIZED_QTY',
-        `Decoration quantity for ${name} was normalized to ${qty}.`,
+        `La cantidad de decoración para ${name} se normalizó a ${qty}.`,
       )
     }
     normalizedDecorationCounts[name] = qty
@@ -174,12 +174,12 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
   let effectiveLength = clampNonNegativeInt(inputs.length, 1)
 
   if (inputs.techniqueKind === 'no-length' || inputs.techniqueKind === 'maintenance') {
-    const kindLabel = inputs.techniqueKind === 'maintenance' ? 'Mantenimiento' : 'Tecnica'
+    const kindLabel = inputs.techniqueKind === 'maintenance' ? 'Mantenimiento' : 'Técnica'
     const techniquePrice = getSafePrice(
       tables.PRICES_NO_LENGTH?.[inputs.techniqueName],
       messages,
       'MISSING_TECHNIQUE_PRICE',
-      `Technique ${inputs.techniqueName}`,
+      `La técnica ${inputs.techniqueName}`,
     )
     const lineTotalCents = toCents(techniquePrice)
     subtotalCents += lineTotalCents
@@ -203,11 +203,11 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
         messages,
         'warning',
         'MISSING_TECHNIQUE_PRICE',
-        `Technique ${inputs.techniqueName} does not have a with-length table. Falling back to 0.`,
+        `La técnica ${inputs.techniqueName} no tiene una tabla con largo. Se usará 0.`,
       )
 
       items.push({
-        name: `Tecnica con largo: ${inputs.techniqueName || 'sin seleccionar'}`,
+        name: `Técnica con largo: ${inputs.techniqueName || 'sin seleccionar'}`,
         unitPrice: 0,
         qty: 1,
         freeQty: 0,
@@ -227,11 +227,11 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
           messages,
           'warning',
           'MISSING_TECHNIQUE_PRICE',
-          `Technique ${inputs.techniqueName} has an empty with-length table. Falling back to 0.`,
+          `La técnica ${inputs.techniqueName} tiene una tabla con largo vacía. Se usará 0.`,
         )
 
         items.push({
-          name: `Tecnica con largo: ${inputs.techniqueName || 'sin seleccionar'}`,
+          name: `Técnica con largo: ${inputs.techniqueName || 'sin seleccionar'}`,
           unitPrice: 0,
           qty: 1,
           freeQty: 0,
@@ -252,7 +252,7 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
             messages,
             'info',
             'CAPPED_LENGTH',
-            `Length ${requestedLength} was capped to ${cappedLength}.`,
+            `El largo ${requestedLength} se ajustó a ${cappedLength}.`,
           )
         }
 
@@ -267,7 +267,7 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
         subtotalCents += lineTotalCents
 
         items.push({
-          name: `Tecnica con largo: ${inputs.techniqueName || 'sin seleccionar'} (L${cappedLength})`,
+          name: `Técnica con largo: ${inputs.techniqueName || 'sin seleccionar'} (L${cappedLength})`,
           unitPrice: techniquePrice,
           qty: 1,
           freeQty: 0,
@@ -285,7 +285,7 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
     inputs.techniqueKind !== 'with-length' &&
     inputs.techniqueKind !== 'maintenance'
   ) {
-    pushMessage(messages, 'warning', 'INVALID_TECHNIQUE_KIND', 'Technique kind is invalid. Falling back to 0.')
+    pushMessage(messages, 'warning', 'INVALID_TECHNIQUE_KIND', 'El tipo de técnica no es válido. Se usará 0.')
   }
 
   const knownDecorationNames = new Set([
@@ -378,7 +378,7 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
       tables.RETIRO_PRICES?.[retiroType],
       messages,
       'MISSING_EXTRA_PRICE',
-      `Retiro ${retiroType}`,
+      `El retiro ${retiroType}`,
     )
     const lineTotalCents = toCents(unitPrice)
     subtotalCents += lineTotalCents
@@ -406,13 +406,13 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
       tables.REPOSICION_PRICES?.[reposicionType],
       messages,
       'MISSING_EXTRA_PRICE',
-      `Reposicion ${reposicionType}`,
+      `La reposición ${reposicionType}`,
     )
     const lineTotalCents = toCents(unitPrice) * reposicionQty
     subtotalCents += lineTotalCents
 
     items.push({
-      name: `Reposicion (${reposicionType})`,
+      name: `Reposición (${reposicionType})`,
       unitPrice,
       qty: reposicionQty,
       freeQty: 0,

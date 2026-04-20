@@ -26,17 +26,70 @@ const DEFAULT_DECORATION_COUNTS = Object.fromEntries(
   DECORATION_OPTIONS.map((item) => [item.name, 0]),
 )
 
+const DISPLAY_NAME_NORMALIZATION = {
+  Acrilico: 'Acrílico',
+  'Kapping de acrilico': 'Kapping de acrílico',
+  'Tecnica Hibrida': 'Técnica híbrida',
+  'Mantenimiento de Acrilico': 'Mantenimiento de Acrílico',
+  'Mantenimiento de Rubber gel': 'Mantenimiento de Rubber Gel',
+  'Mantenimiento de Builder gel': 'Mantenimiento de Builder Gel',
+  'Esculpidas en acrilico': 'Esculpidas en acrílico',
+  'Efecto Azucar': 'Efecto Azúcar',
+  Marmol: 'Mármol',
+  'Diseno de piedras': 'Diseño de piedras',
+  'Diseno de piedras elaborado': 'Diseño de piedras elaborado',
+  'Diseno completo Ojo de gato': 'Diseño completo Ojo de gato',
+  'Diseno completo de francesas': 'Diseño completo de francesas',
+  'Diseno completo de color entero': 'Diseño completo de color entero',
+  'Retiro Acrilico': 'Retiro Acrílico',
+  'Reposicion Acrilico': 'Reposición Acrílico',
+  'Reposicion Polygel': 'Reposición Polygel',
+  'Reposicion Builder Gel': 'Reposición Builder Gel',
+}
+
+function normalizeDisplayName(value) {
+  if (typeof value !== 'string') return value
+  return DISPLAY_NAME_NORMALIZATION[value] || value
+}
+
+function normalizeDecorationCounts(rawCounts) {
+  if (rawCounts === null || typeof rawCounts !== 'object' || Array.isArray(rawCounts)) return {}
+
+  return Object.entries(rawCounts).reduce((accumulator, [name, value]) => {
+    const normalizedName = normalizeDisplayName(name)
+    const numericValue = Number(value)
+    accumulator[normalizedName] = (accumulator[normalizedName] || 0) + (Number.isFinite(numericValue) ? numericValue : 0)
+    return accumulator
+  }, {})
+}
+
+function normalizeSelectionOrder(rawOrder) {
+  if (!Array.isArray(rawOrder)) return []
+
+  const knownNames = new Set(Object.keys(DEFAULT_DECORATION_COUNTS))
+  const dedup = new Set()
+
+  return rawOrder
+    .map(normalizeDisplayName)
+    .filter((name) => knownNames.has(name))
+    .filter((name) => {
+      if (dedup.has(name)) return false
+      dedup.add(name)
+      return true
+    })
+}
+
 const INITIAL_ESTIMATE_STATE = {
   techniqueKind: 'with-length',
-  techniqueName: 'Acrilico',
+  techniqueName: 'Acrílico',
   lengthLevel: 3,
   decorationCounts: {
     ...DEFAULT_DECORATION_COUNTS,
     Espejo: 0,
     Aurora: 0,
-    Azucar: 0,
+    'Azúcar': 0,
   },
-  selectionOrder: ['Espejo', 'Azucar'],
+  selectionOrder: ['Espejo', 'Azúcar'],
   changeShape: false,
   retiroType: 'none',
   reposicionType: 'acrilico',
@@ -59,10 +112,10 @@ function App() {
     if (!saved) return
 
     setTechniqueKind(saved.techniqueKind || 'with-length')
-    setTechniqueName(saved.techniqueName || 'Acrilico')
+    setTechniqueName(normalizeDisplayName(saved.techniqueName || 'Acrílico'))
     setLengthLevel(Number.isInteger(saved.length) ? saved.length : 3)
-    setDecorationCounts({ ...DEFAULT_DECORATION_COUNTS, ...(saved.decorationCounts || {}) })
-    setSelectionOrder(Array.isArray(saved.selectionOrder) ? saved.selectionOrder : [])
+    setDecorationCounts({ ...DEFAULT_DECORATION_COUNTS, ...normalizeDecorationCounts(saved.decorationCounts || {}) })
+    setSelectionOrder(normalizeSelectionOrder(saved.selectionOrder))
     setChangeShape(Boolean(saved.changeShape))
     setRetiroType(saved.retiroType || 'none')
     setReposicionType(saved.reposicionType || 'acrilico')
@@ -153,8 +206,8 @@ function App() {
             <span>Asistente de Precios</span>
           </h1>
           <p className="lead">
-            Elige tecnicas,
-            disenos y cuidados complementarios para obtener una estimacion
+            Elige técnicas,
+            diseños y cuidados complementarios para obtener una estimación
             de tu servicio.
           </p>
         </header>
