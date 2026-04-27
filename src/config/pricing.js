@@ -28,31 +28,31 @@ const DECORATION_PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=80'
 
 export const SIMPLE_DECORATION_OPTIONS = [
-  { name: 'Efecto Espejo', image: 'public/efecto-espejo.jpeg' },
-  { name: 'Efecto Aurora', image: 'public/efecto-aurora.jpeg' },
-  { name: 'Efecto Azúcar', image: 'public/efecto-azucar.jpeg' },
-  { name: 'Carey', image: 'public/carey.jpeg' },
-  { name: 'Blooming', image: 'public/blooming.jpeg' },
-  { name: 'Polka dots', image: 'public/polka-dots.jpeg' },
-  { name: 'Mármol', image: 'public/marmol.jpeg' },
-  { name: 'Ojo de gato', image: 'public/ojo-de-gato.jpeg' },
-  { name: 'Relieve', image: 'public/relieve.jpeg' },
-  { name: '3D', image: 'public/3D.jpeg' },
-  { name: 'Francesas (4)', image: 'public/francesas.jpeg' },
-  { name: 'Nail art simple', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Nail art complicado', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Encapsulado', image: 'public/encapsulado.jpeg' },
-  { name: 'Naturaleza muerta', image: 'public/naturaleza-muerta.jpeg' },
-  { name: 'Dijes', image: 'public/dijes.jpeg' },
+  { name: 'Efecto Espejo', image: '/efecto-espejo.jpeg' },
+  { name: 'Efecto Aurora', image: '/efecto-aurora.jpeg' },
+  { name: 'Efecto Azúcar', image: '/efecto-azucar.jpeg' },
+  { name: 'Carey', image: '/carey.jpeg' },
+  { name: 'Blooming', image: '/blooming.jpeg' },
+  { name: 'Polka dots', image: '/polka-dots.jpeg' },
+  { name: 'Mármol', image: '/marmol.jpeg' },
+  { name: 'Ojo de gato', image: '/ojo-de-gato.jpeg' },
+  { name: 'Relieve', image: '/relieve.jpeg' },
+  { name: '3D', image: '/3D.jpeg' },
+  { name: 'Francesas (4)', image: '/francesas.jpeg' },
+/*   { name: 'Nail art simple', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Nail art complicado', image: DECORATION_PLACEHOLDER_IMAGE }, */
+  { name: 'Encapsulado', image: '/encapsulado.jpeg' },
+  { name: 'Naturaleza muerta', image: '/naturaleza-muerta.jpeg' },
+  { name: 'Dijes', image: '/dijes.jpeg' },
   { name: 'Baby boomer', image: DECORATION_PLACEHOLDER_IMAGE },
 ]
 
 export const FULL_DESIGN_OPTIONS = [
-  { name: 'Diseño de piedras', image: 'public/diseño-de-piedras-simples.jpeg' },
-  { name: 'Diseño de piedras elaborado', image: 'public/diseño-de-piedras-completo.jpeg' },
-  { name: 'Diseño completo Ojo de gato', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Diseño de piedras', image: '/diseño-de-piedras-simples.jpeg' },
+  { name: 'Diseño de piedras elaborado', image: '/diseño-de-piedras-completo.jpeg' },
+/*   { name: 'Diseño completo Ojo de gato', image: DECORATION_PLACEHOLDER_IMAGE },
   { name: 'Diseño completo de francesas', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseño completo de color entero', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Diseño completo de color entero', image: DECORATION_PLACEHOLDER_IMAGE }, */
 ]
 
 export const DECORATION_OPTIONS = [...SIMPLE_DECORATION_OPTIONS, ...FULL_DESIGN_OPTIONS]

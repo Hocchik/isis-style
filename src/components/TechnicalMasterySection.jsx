@@ -59,6 +59,9 @@ export function TechnicalMasterySection({
                 </option>
               ))}
             </select>
+            <span className={"selected-check " + (techniqueKind === 'no-length' ? 'is-active' : '')} aria-hidden>
+              ✓
+            </span>
           </div>
 
           <div className="cards-grid cards-grid-limited desktop-technique-list">
@@ -94,6 +97,9 @@ export function TechnicalMasterySection({
                 </option>
               ))}
             </select>
+            <span className={"selected-check " + (techniqueKind === 'with-length' ? 'is-active' : '')} aria-hidden>
+              ✓
+            </span>
           </div>
 
           <div className="cards-grid cards-grid-limited desktop-technique-list">
@@ -129,6 +135,9 @@ export function TechnicalMasterySection({
                 </option>
               ))}
             </select>
+            <span className={"selected-check " + (techniqueKind === 'maintenance' ? 'is-active' : '')} aria-hidden>
+              ✓
+            </span>
           </div>
 
           <div className="cards-grid cards-grid-limited desktop-technique-list">

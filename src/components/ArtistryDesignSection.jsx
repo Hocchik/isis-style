@@ -16,6 +16,7 @@ export function ArtistryDesignSection({
   const [canScrollRight, setCanScrollRight] = useState(true)
   const [canScrollFullLeft, setCanScrollFullLeft] = useState(false)
   const [canScrollFullRight, setCanScrollFullRight] = useState(true)
+  const [preview, setPreview] = useState(null)
 
   useEffect(() => {
     const track = trackRef.current
@@ -89,8 +90,18 @@ export function ArtistryDesignSection({
     })
   }
 
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === 'Escape') setPreview(null)
+    }
+
+    if (preview) window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [preview])
+
   return (
-    <section className="section-block">
+    <>
+      <section className="section-block">
       <div className="section-head-with-actions">
         <h2>
           <span>02</span> Decoraciones y diseños
@@ -130,7 +141,13 @@ export function ArtistryDesignSection({
 
           return (
             <article key={item.name} className="design-card">
-              <img src={item.image} alt={item.name} loading="lazy" />
+              <img
+                src={item.image}
+                alt={item.name}
+                loading="lazy"
+                onClick={() => setPreview({ src: item.image, name: item.name })}
+                style={{ cursor: 'pointer' }}
+              />
               <div className="design-body">
                 <h3>{item.name}</h3>
                 <p>{formatCurrency(decorationPrices[item.name] || 0)} por par</p>
@@ -196,7 +213,13 @@ export function ArtistryDesignSection({
 
           return (
             <article key={item.name} className="design-card">
-              <img src={item.image} alt={item.name} loading="lazy" />
+              <img
+                src={item.image}
+                alt={item.name}
+                loading="lazy"
+                onClick={() => setPreview({ src: item.image, name: item.name })}
+                style={{ cursor: 'pointer' }}
+              />
               <div className="design-body">
                 <h3>{item.name}</h3>
                 <p>{formatCurrency(decorationPrices[item.name] || 0)} precio fijo</p>
@@ -224,6 +247,27 @@ export function ArtistryDesignSection({
         })}
         </div>
       </div>
-    </section>
+      </section>
+
+      {preview ? (
+        <div
+          className="image-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={preview.name}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPreview(null)
+          }}
+        >
+          <div className="image-modal-content" role="document">
+            <button className="image-modal-close" onClick={() => setPreview(null)} aria-label="Cerrar">
+              ×
+            </button>
+            <img src={preview.src} alt={preview.name} />
+            <p className="image-modal-caption">{preview.name}</p>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
