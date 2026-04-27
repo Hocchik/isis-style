@@ -134,11 +134,11 @@ export const PRICE_TABLES = {
   DECORATION_PRICES: {
     'Efecto Espejo': 3,
     'Efecto Aurora': 3,
-    'Efecto Azucar': 3,
+    'Efecto Azúcar': 3,
     'Carey': 15,
     'Blooming': 5,
     'Polka dots': 5,
-    'Marmol': 5,
+    'Mármol': 5,
     'Ojo de gato': 5,
     'Relieve': 10,
     '3D': 10,
