@@ -33,7 +33,7 @@ export const SIMPLE_DECORATION_OPTIONS = [
   { name: 'Efecto Azúcar', image: '/efecto-azucar.jpeg' },
   { name: 'Carey', image: '/carey.jpeg' },
   { name: 'Blooming', image: '/blooming.jpeg' },
-  { name: 'Polka dots', image: '/polka-dots.jpeg' },
+  { name: 'Polka dots', image: '/polka-dot.jpeg' },
   { name: 'Mármol', image: '/marmol.jpeg' },
   { name: 'Ojo de gato', image: '/ojo-de-gato.jpeg' },
   { name: 'Relieve', image: '/relieve.jpeg' },
