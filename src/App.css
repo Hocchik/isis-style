@@ -43,8 +43,9 @@
   display: block;
   font-family: var(--serif-alt);
   font-style: italic;
+  margin-top: 0.5em;
   font-weight: 500;
-  font-size: 0.76em;
+  font-size: 0.4em;
 }
 
 .lead {
@@ -78,7 +79,7 @@
 }
 
 .section-block h2 span {
-  color: #9dc8ba;
+  color: #6fb636;
 }
 
 .service-grid {

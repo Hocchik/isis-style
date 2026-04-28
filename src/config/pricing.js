@@ -22,12 +22,15 @@ export const WITH_LENGTH_TECHNIQUES = [
   { id: 'polygel', name: 'Polygel' },
   { id: 'esculpidas-acrilico', name: 'Esculpidas en acrílico' },
   { id: 'esculpidas-polygel', name: 'Esculpidas en polygel' },
+  { id: 'baby-boomer', name: 'Baby boomer' },
 ]
 
 const DECORATION_PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=80'
 
 export const SIMPLE_DECORATION_OPTIONS = [
+  { name: 'Francesas (4)', image: '/francesas.jpeg' },
+  { name: 'Color entero', image: '/color-entero.jpeg' },
   { name: 'Efecto Espejo', image: '/efecto-espejo.jpeg' },
   { name: 'Efecto Aurora', image: '/efecto-aurora.jpeg' },
   { name: 'Efecto Azúcar', image: '/efecto-azucar.jpeg' },
@@ -38,21 +41,20 @@ export const SIMPLE_DECORATION_OPTIONS = [
   { name: 'Ojo de gato', image: '/ojo-de-gato.jpeg' },
   { name: 'Relieve', image: '/relieve.jpeg' },
   { name: '3D', image: '/3D.jpeg' },
-  { name: 'Francesas (4)', image: '/francesas.jpeg' },
-/*   { name: 'Nail art simple', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Nail art complicado', image: DECORATION_PLACEHOLDER_IMAGE }, */
   { name: 'Encapsulado', image: '/encapsulado.jpeg' },
   { name: 'Naturaleza muerta', image: '/naturaleza-muerta.jpeg' },
   { name: 'Dijes', image: '/dijes.jpeg' },
-  { name: 'Baby boomer', image: DECORATION_PLACEHOLDER_IMAGE },
+  { name: 'Baby boomer', image: '/baby-boomer.jpeg' },
 ]
 
 export const FULL_DESIGN_OPTIONS = [
-  { name: 'Diseño de piedras', image: '/diseño-de-piedras-simples.jpeg' },
+  { name: 'Diseño de piedras simple', image: '/diseño-de-piedras-simples.jpeg' },
   { name: 'Diseño de piedras elaborado', image: '/diseño-de-piedras-completo.jpeg' },
-/*   { name: 'Diseño completo Ojo de gato', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseño completo de francesas', image: DECORATION_PLACEHOLDER_IMAGE },
-  { name: 'Diseño completo de color entero', image: DECORATION_PLACEHOLDER_IMAGE }, */
+  { name: 'Diseño completo Ojo de gato', image: '/ojo-de-gato.jpeg' },
+  { name: 'Diseño completo de francesas', image: '/francesas.jpeg' },
+  { name: 'Diseño completo de color entero', image: '/color-entero.jpeg' },
+  { name: 'Nail art simple', image: '/nail-art-simple.jpeg' },
+  { name: 'Nail art complicado', image: '/nail-art-complicado.jpeg' },
 ]
 
 export const DECORATION_OPTIONS = [...SIMPLE_DECORATION_OPTIONS, ...FULL_DESIGN_OPTIONS]
@@ -130,30 +132,32 @@ export const PRICE_TABLES = {
     'Polygel': { 1: 70, 2: 70, 3: 80, 4: 90, 5: 100, 6: 110 },
     'Esculpidas en acrílico': { 1: 70, 2: 70, 3: 80, 4: 90, 5: 100, 6: 110 },
     'Esculpidas en polygel': { 1: 80, 2: 80, 3: 90, 4: 100, 5: 110, 6: 120 },
+    'Baby boomer': { 1: 60, 2: 60, 3: 70, 4: 80, 5: 90, 6: 100 },
   },
   DECORATION_PRICES: {
+    'Francesas (4)': 8,
+    'Color entero': 5,
     'Efecto Espejo': 3,
     'Efecto Aurora': 3,
     'Efecto Azúcar': 3,
-    'Carey': 15,
+    'Carey': 10,
     'Blooming': 5,
     'Polka dots': 5,
     'Mármol': 5,
     'Ojo de gato': 5,
-    'Relieve': 10,
-    '3D': 10,
-    'Francesas (4)': 10,
-    'Nail art simple': 10,
-    'Nail art complicado': 20,
+    'Relieve': 5,
+    '3D': 8,
     'Encapsulado': 5,
     'Naturaleza muerta': 5,
-    'Dijes': 15,
-    'Baby boomer': 10,
-    'Diseño de piedras': 10,
-    'Diseño de piedras elaborado': 20,
-    'Diseño completo Ojo de gato': 20,
+    'Dijes': 10,
+    'Baby boomer': 5,
+    'Diseño de piedras simple': 5,
+    'Diseño de piedras elaborado': 15,
+    'Diseño completo Ojo de gato': 15,
     'Diseño completo de francesas': 15,
     'Diseño completo de color entero': 10,
+    'Nail art simple': 10,
+    'Nail art complicado': 20,
   },
   CHANGE_SHAPE_PRICE: 10,
   RETIRO_PRICES: {
