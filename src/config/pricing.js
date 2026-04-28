@@ -166,7 +166,7 @@ export const PRICE_TABLES = {
     none: 0,
     'acrilico': 6,
     'polygel': 7,
-    'builder-gel': 70,
+    'builder-gel': 7,
   },
   NON_COMBINABLE_DECORATIONS: {
     'Espejo': [],
