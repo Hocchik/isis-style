@@ -28,12 +28,17 @@ export const WITH_LENGTH_TECHNIQUES = [
 const DECORATION_PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=700&q=80'
 
-export const SIMPLE_DECORATION_OPTIONS = [
-  { name: 'Francesas (4)', image: '/francesas.jpeg' },
+export const INCLUDED_DECORATION_OPTIONS = [
+  { name: 'Francesas', image: '/francesas.jpeg' },
   { name: 'Color entero', image: '/color-entero.jpeg' },
+]
+
+export const SIMPLE_DECORATION_OPTIONS = [
   { name: 'Efecto Espejo', image: '/efecto-espejo.jpeg' },
   { name: 'Efecto Aurora', image: '/efecto-aurora.jpeg' },
   { name: 'Efecto Azúcar', image: '/efecto-azucar.jpeg' },
+  { name: 'Francesas (4)', image: '/francesas.jpeg' },
+  { name: 'Color entero', image: '/color-entero.jpeg' },
   { name: 'Carey', image: '/carey.jpeg' },
   { name: 'Blooming', image: '/blooming.jpeg' },
   { name: 'Polka dots', image: '/polka-dot.jpeg' },
@@ -57,7 +62,11 @@ export const FULL_DESIGN_OPTIONS = [
   { name: 'Nail art complicado', image: '/nail-art-complicado.jpeg' },
 ]
 
-export const DECORATION_OPTIONS = [...SIMPLE_DECORATION_OPTIONS, ...FULL_DESIGN_OPTIONS]
+export const DECORATION_OPTIONS = [
+  ...INCLUDED_DECORATION_OPTIONS,
+  ...SIMPLE_DECORATION_OPTIONS,
+  ...FULL_DESIGN_OPTIONS,
+]
 
 export const CARE_OPTIONS = [
   {
@@ -159,6 +168,7 @@ export const PRICE_TABLES = {
     'Nail art simple': 10,
     'Nail art complicado': 20,
   },
+  INCLUDED_DECORATIONS: INCLUDED_DECORATION_OPTIONS.map((item) => item.name),
   CHANGE_SHAPE_PRICE: 10,
   RETIRO_PRICES: {
     none: 0,

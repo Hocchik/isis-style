@@ -2,8 +2,6 @@
  * Pure estimator for nail service pricing.
  * Deterministic, side-effect free and O(n) over selected items.
  */
-const FREE_DECORATION_UNITS = 2
-
 const DEFAULT_INPUTS = {
   techniqueKind: 'no-length',
   techniqueName: '',
@@ -22,6 +20,7 @@ const DEFAULT_PRICE_TABLES = {
   CHANGE_SHAPE_PRICE: 0,
   RETIRO_PRICES: { none: 0, acrilico: 0, gel: 0 },
   REPOSICION_PRICES: { none: 0, acrilico: 0, polygel: 0, 'builder-gel': 0 },
+  INCLUDED_DECORATIONS: [],
   NON_COMBINABLE_DECORATIONS: {},
 }
 
@@ -76,16 +75,25 @@ function normalizeSelectionOrder(selectionOrder, knownNames) {
     })
 }
 
-function buildDecorationState(names, counts, nonCombinable, freeAllocation) {
+function buildDecorationState(names, counts, nonCombinable, freeAllocation, groupState) {
   const state = {}
+  const includedSet = groupState.includedSet
+  const hasSimpleSelected = groupState.hasSimpleSelected
+  const hasFullSelected = groupState.hasFullSelected
 
   for (const name of names) {
     const isSelected = (counts[name] || 0) > 0
     const conflicts = Array.isArray(nonCombinable[name]) ? nonCombinable[name] : []
     const hasSelectedConflict = conflicts.some((conflictName) => (counts[conflictName] || 0) > 0)
+    const isIncluded = includedSet.has(name)
+    const isFullDesign = isFullDesignDecoration(name)
+    const isSimple = !isIncluded && !isFullDesign
+    const isGroupBlocked =
+      (!isSelected && isFullDesign && hasSimpleSelected) ||
+      (!isSelected && isSimple && hasFullSelected)
 
     state[name] = {
-      isDisabled: !isSelected && hasSelectedConflict,
+      isDisabled: !isSelected && (hasSelectedConflict || isGroupBlocked),
       badge: (freeAllocation[name] || 0) > 0 ? 'incluido' : null,
     }
   }
@@ -118,6 +126,7 @@ function isFullDesignDecoration(name) {
  * @property {number} CHANGE_SHAPE_PRICE
  * @property {Record<string, number>} RETIRO_PRICES
  * @property {Record<string, number>} REPOSICION_PRICES
+ * @property {string[]} [INCLUDED_DECORATIONS]
  * @property {Record<string, string[]>} [NON_COMBINABLE_DECORATIONS]
  */
 
@@ -300,14 +309,22 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
     }
   }
 
-  let remainingFree = FREE_DECORATION_UNITS
+  const includedSet = new Set(
+    Array.isArray(tables.INCLUDED_DECORATIONS)
+      ? tables.INCLUDED_DECORATIONS.filter((name) => typeof name === 'string')
+      : [],
+  )
+
+  let hasSimpleSelected = false
+  let hasFullSelected = false
 
   for (const name of orderedNames) {
     const rawQty = clampNonNegativeInt(normalizedDecorationCounts[name], 0)
     const isFullDesign = isFullDesignDecoration(name)
-    const qty = isFullDesign ? Math.min(rawQty, 1) : rawQty
+    const isIncluded = includedSet.has(name)
+    const qty = isFullDesign || isIncluded ? Math.min(rawQty, 1) : rawQty
 
-    if (isFullDesign && rawQty > 1) {
+    if ((isFullDesign || isIncluded) && rawQty > 1) {
       pushMessage(
         messages,
         'info',
@@ -321,12 +338,17 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
       continue
     }
 
-    const freeHere = isFullDesign ? 0 : Math.min(qty, remainingFree)
+    const freeHere = isIncluded ? qty : 0
     const chargedQty = qty - freeHere
-    if (!isFullDesign) {
-      remainingFree -= freeHere
-    }
     freeAllocation[name] = freeHere
+
+    if (!isIncluded && !isFullDesign && qty > 0) {
+      hasSimpleSelected = true
+    }
+
+    if (isFullDesign && qty > 0) {
+      hasFullSelected = true
+    }
 
     const unitPrice = getSafePrice(
       tables.DECORATION_PRICES?.[name],
@@ -428,6 +450,11 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
     normalizedDecorationCounts,
     tables.NON_COMBINABLE_DECORATIONS || {},
     freeAllocation,
+    {
+      includedSet,
+      hasSimpleSelected,
+      hasFullSelected,
+    },
   )
 
   const itemsWithDisableState = items.map((item) => {

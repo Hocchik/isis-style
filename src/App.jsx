@@ -3,6 +3,7 @@ import './App.css'
 import {
   DECORATION_OPTIONS,
   FULL_DESIGN_OPTIONS,
+  INCLUDED_DECORATION_OPTIONS,
   MANTENIMIENTOS_TECHNIQUES,
   NO_LENGTH_TECHNIQUES,
   PRICE_TABLES,
@@ -184,6 +185,17 @@ function App() {
     }
   }
 
+  function setIncludedSelected(name, isSelected) {
+    setDecorationCounts((prev) => ({
+      ...prev,
+      [name]: isSelected ? 1 : 0,
+    }))
+
+    if (isSelected) {
+      setSelectionOrder((prev) => (prev.includes(name) ? prev : [...prev, name]))
+    }
+  }
+
   function resetEstimateToInitial() {
     setTechniqueKind(INITIAL_ESTIMATE_STATE.techniqueKind)
     setTechniqueName(INITIAL_ESTIMATE_STATE.techniqueName)
@@ -200,16 +212,19 @@ function App() {
     <div className="pricing-page">
       <main className="content-column">
         <header className="hero">
-          <p className="eyebrow">Experiencia Interactiva</p>
-          <h1>
-            Isis Styles
-            <span>Asistente de Precios</span>
-          </h1>
-          <p className="lead">
-            Elige técnicas,
-            diseños y cuidados complementarios para obtener una estimación
-            de tu servicio.
-          </p>
+          <div className="hero-text">
+            <p className="eyebrow">Experiencia Interactiva</p>
+            <h1>
+              Isis Styles
+              <span>Asistente de Precios</span>
+            </h1>
+            <p className="lead">
+              Elige técnicas,
+              diseños y cuidados complementarios para obtener una estimación
+              de tu servicio.
+            </p>
+          </div>
+          {/* <img className="hero-logo" src="/isis-logo-icon.png" alt="Isis Styles" /> */}
         </header>
 
         <TechnicalMasterySection
@@ -227,11 +242,14 @@ function App() {
         />
 
         <ArtistryDesignSection
+          includedDecorationOptions={INCLUDED_DECORATION_OPTIONS}
           simpleDecorationOptions={SIMPLE_DECORATION_OPTIONS}
           fullDesignOptions={FULL_DESIGN_OPTIONS}
           decorationCounts={decorationCounts}
           decorationState={estimate.ui.decorationState}
           decorationPrices={PRICE_TABLES.DECORATION_PRICES}
+          isIncludedDisabled={techniqueKind === 'maintenance'}
+          onSetIncludedSelected={setIncludedSelected}
           onUpdateDecorationQty={updateDecorationQty}
           onSetFullDesignSelected={setFullDesignSelected}
           formatCurrency={formatCurrency}

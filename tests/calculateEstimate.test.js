@@ -12,6 +12,7 @@ const basePriceTables = {
     Aurora: 12,
     'Diseno completo de francesas': 25,
   },
+  INCLUDED_DECORATIONS: ['Espejo'],
   CHANGE_SHAPE_PRICE: 10,
   RETIRO_PRICES: {
     none: 0,
@@ -28,8 +29,8 @@ const basePriceTables = {
 }
 
 describe('calculateEstimate', () => {
-  test('asigna pares gratis por orden de seleccion (casos A y B)', () => {
-    const caseA = calculateEstimate(
+  test('marca decoraciones incluidas sin costo', () => {
+    const result = calculateEstimate(
       {
         techniqueKind: 'with-length',
         techniqueName: 'Acrilico',
@@ -43,29 +44,15 @@ describe('calculateEstimate', () => {
       basePriceTables,
     )
 
-    expect(caseA.freeAllocation.Espejo).toBe(2)
-    expect(caseA.freeAllocation.Aurora).toBe(0)
-    expect(caseA.items.find((item) => item.name === 'Aurora')?.chargedQty).toBe(1)
-    expect(caseA.total).toBe(82)
+    const included = result.items.find((item) => item.name === 'Espejo')
+    const aurora = result.items.find((item) => item.name === 'Aurora')
 
-    const caseB = calculateEstimate(
-      {
-        techniqueKind: 'with-length',
-        techniqueName: 'Acrilico',
-        length: 3,
-        decorationCounts: { Aurora: 1, Espejo: 2 },
-        selectionOrder: ['Aurora', 'Espejo'],
-        changeShape: false,
-        retiroType: 'none',
-        reposicionType: 'none',
-      },
-      basePriceTables,
-    )
-
-    expect(caseB.freeAllocation.Aurora).toBe(1)
-    expect(caseB.freeAllocation.Espejo).toBe(1)
-    expect(caseB.items.find((item) => item.name === 'Espejo')?.chargedQty).toBe(1)
-    expect(caseB.total).toBe(78)
+    expect(result.freeAllocation.Espejo).toBe(1)
+    expect(result.freeAllocation.Aurora).toBe(0)
+    expect(included?.chargedQty).toBe(0)
+    expect(included?.lineTotal).toBe(0)
+    expect(aurora?.chargedQty).toBe(1)
+    expect(result.total).toBe(82)
   })
 
   test('capea largo al maximo y acumula extras correctamente', () => {
