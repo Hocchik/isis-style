@@ -224,7 +224,7 @@ function App() {
               de tu servicio.
             </p>
           </div>
-          {/* <img className="hero-logo" src="/isis-logo-icon.png" alt="Isis Styles" /> */}
+          <img className="hero-logo" src="/isis-logo-icon.png" alt="Isis Styles" />
         </header>
 
         <TechnicalMasterySection
