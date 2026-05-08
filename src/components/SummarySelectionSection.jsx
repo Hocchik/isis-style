@@ -41,7 +41,8 @@ export function SummarySelectionSection({ estimate, onReset }) {
         onClick={() => setIsMobileOpen(true)}
         aria-label="Ver resumen y opciones"
       >
-        Total
+        <span className="fab-label">Ver resumen</span>
+        <span className="fab-total">{estimate.formattedTotal}</span>
       </button>
 
       <button
