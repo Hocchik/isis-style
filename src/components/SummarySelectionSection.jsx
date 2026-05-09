@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 function isIOS() {
   return (
@@ -8,14 +9,27 @@ function isIOS() {
   )
 }
 
+function openPdfOnIOS(canvas) {
+  const imgData = canvas.toDataURL('image/png')
+  const pdfWidthMm = 210
+  const pdfHeightMm = Math.round((canvas.height * pdfWidthMm) / canvas.width)
+
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [pdfWidthMm, pdfHeightMm] })
+  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidthMm, pdfHeightMm)
+
+  const blob = pdf.output('blob')
+  const url = URL.createObjectURL(blob)
+  window.open(url, '_blank')
+  setTimeout(() => URL.revokeObjectURL(url), 60000)
+}
+
 export function SummarySelectionSection({ estimate, onReset }) {
   const exportRef = useRef(null)
   const [isExporting, setIsExporting] = useState(false)
   const [exportError, setExportError] = useState('')
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [iosPreviewUrl, setIosPreviewUrl] = useState(null)
 
-  async function handleExportJpg() {
+  async function handleExport() {
     if (!exportRef.current || isExporting) return
 
     setIsExporting(true)
@@ -29,19 +43,30 @@ export function SummarySelectionSection({ estimate, onReset }) {
         logging: false,
       })
 
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.95)
-
       if (isIOS()) {
-        setIosPreviewUrl(dataUrl)
+        // Intentar Web Share API con PNG (abre el sheet nativo: WhatsApp, Fotos, etc.)
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+        const file = new File([blob], 'resumen-isis-styles.png', { type: 'image/png' })
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Resumen de precios — Isis Styles' })
+          return
+        }
+
+        // Fallback: abrir PDF en Safari (el usuario puede compartir desde ahí)
+        openPdfOnIOS(canvas)
         return
       }
 
+      // Android / PC: descarga directa PNG
       const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = `resumen-precios-${Date.now()}.jpg`
+      link.href = canvas.toDataURL('image/png')
+      link.download = `resumen-isis-styles-${Date.now()}.png`
       link.click()
-    } catch {
-      setExportError('No se pudo exportar la imagen. Inténtalo nuevamente.')
+    } catch (err) {
+      if (err?.name !== 'AbortError') {
+        setExportError('No se pudo exportar. Inténtalo nuevamente.')
+      }
     } finally {
       setIsExporting(false)
     }
@@ -78,7 +103,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
             onClick={() => setIsMobileOpen(false)}
             aria-label="Cerrar"
           >
-            x
+            ×
           </button>
         </div>
 
@@ -99,8 +124,8 @@ export function SummarySelectionSection({ estimate, onReset }) {
         </div>
 
         <div className="summary-actions">
-          <button className="cta" onClick={handleExportJpg} disabled={isExporting}>
-            {isExporting ? 'Exportando...' : 'Exportar JPG'}
+          <button className="cta" onClick={handleExport} disabled={isExporting}>
+            {isExporting ? 'Generando...' : 'Compartir resumen'}
           </button>
           <button className="cta cta-secondary" onClick={onReset}>
             Limpiar
@@ -117,24 +142,6 @@ export function SummarySelectionSection({ estimate, onReset }) {
           </small>
         ) : null}
       </div>
-
-      {iosPreviewUrl ? (
-        <div
-          className="image-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Guardar imagen"
-          onClick={(e) => { if (e.target === e.currentTarget) setIosPreviewUrl(null) }}
-        >
-          <div className="image-modal-content">
-            <button className="image-modal-close" onClick={() => setIosPreviewUrl(null)} aria-label="Cerrar">×</button>
-            <img src={iosPreviewUrl} alt="Resumen de precios" />
-            <p className="image-modal-caption ios-save-hint">
-              Mantén presionada la imagen y elige <strong>"Guardar imagen"</strong>
-            </p>
-          </div>
-        </div>
-      ) : null}
 
       <div className="export-jpg-template" ref={exportRef} aria-hidden="true">
         <p className="export-brand">Isis Styles - Asistente de Precios</p>
@@ -154,7 +161,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
           <strong>{estimate.formattedTotal}</strong>
         </div>
 
-        <small>Plantilla editable para exportación JPG.</small>
+        <small>Precio final sujeto a evaluación presencial.</small>
       </div>
     </aside>
   )
