@@ -1,11 +1,19 @@
 import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 
+function isIOS() {
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  )
+}
+
 export function SummarySelectionSection({ estimate, onReset }) {
   const exportRef = useRef(null)
   const [isExporting, setIsExporting] = useState(false)
   const [exportError, setExportError] = useState('')
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [iosPreviewUrl, setIosPreviewUrl] = useState(null)
 
   async function handleExportJpg() {
     if (!exportRef.current || isExporting) return
@@ -22,6 +30,12 @@ export function SummarySelectionSection({ estimate, onReset }) {
       })
 
       const dataUrl = canvas.toDataURL('image/jpeg', 0.95)
+
+      if (isIOS()) {
+        setIosPreviewUrl(dataUrl)
+        return
+      }
+
       const link = document.createElement('a')
       link.href = dataUrl
       link.download = `resumen-precios-${Date.now()}.jpg`
@@ -103,6 +117,24 @@ export function SummarySelectionSection({ estimate, onReset }) {
           </small>
         ) : null}
       </div>
+
+      {iosPreviewUrl ? (
+        <div
+          className="image-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Guardar imagen"
+          onClick={(e) => { if (e.target === e.currentTarget) setIosPreviewUrl(null) }}
+        >
+          <div className="image-modal-content">
+            <button className="image-modal-close" onClick={() => setIosPreviewUrl(null)} aria-label="Cerrar">×</button>
+            <img src={iosPreviewUrl} alt="Resumen de precios" />
+            <p className="image-modal-caption ios-save-hint">
+              Mantén presionada la imagen y elige <strong>"Guardar imagen"</strong>
+            </p>
+          </div>
+        </div>
+      ) : null}
 
       <div className="export-jpg-template" ref={exportRef} aria-hidden="true">
         <p className="export-brand">Isis Styles - Asistente de Precios</p>

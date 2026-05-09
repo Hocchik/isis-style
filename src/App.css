@@ -494,6 +494,17 @@
   color: #333;
 }
 
+.ios-save-hint {
+  margin-top: 12px;
+  font-size: 15px;
+  color: #555;
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: #f0f7e8;
+  border-radius: 6px;
+  border: 1px solid #c8e0aa;
+}
+
 .included-badge {
   display: inline-block;
   margin-bottom: 10px;
@@ -1135,7 +1146,8 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    padding-right: 90px;
+    padding-right: 96px;
+    min-height: 80px;
   }
 
   .hero-logo {
@@ -1412,7 +1424,7 @@
 
   .reposicion-tabs {
     width: 100%;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
   }
 
@@ -1463,8 +1475,8 @@
 
   .summary-column {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: max(16px, env(safe-area-inset-top, 16px));
+    right: max(16px, env(safe-area-inset-right, 16px));
     bottom: auto;
     left: auto;
     z-index: 50;
@@ -1522,6 +1534,8 @@
     border-left: 1px solid #d9d9d9;
     border-top: none;
     padding: 16px 14px 20px;
+    padding-top: max(16px, env(safe-area-inset-top, 16px));
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
     box-sizing: border-box;
   }
 
