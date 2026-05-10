@@ -494,16 +494,6 @@
   color: #333;
 }
 
-.ios-save-hint {
-  margin-top: 12px;
-  font-size: 15px;
-  color: #555;
-  line-height: 1.5;
-  padding: 10px 14px;
-  background: #f0f7e8;
-  border-radius: 6px;
-  border: 1px solid #c8e0aa;
-}
 
 .included-badge {
   display: inline-block;

@@ -1,27 +1,7 @@
 import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 
-function isIOS() {
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  )
-}
-
-function openPdfOnIOS(canvas) {
-  const imgData = canvas.toDataURL('image/png')
-  const pdfWidthMm = 210
-  const pdfHeightMm = Math.round((canvas.height * pdfWidthMm) / canvas.width)
-
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [pdfWidthMm, pdfHeightMm] })
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidthMm, pdfHeightMm)
-
-  const blob = pdf.output('blob')
-  const url = URL.createObjectURL(blob)
-  window.open(url, '_blank')
-  setTimeout(() => URL.revokeObjectURL(url), 60000)
-}
+const WHATSAPP_URL = `https://wa.me/51942782899?text=${encodeURIComponent('Hola! 💅 Te comparto mi resumen de selección de Isis Styles.')}`
 
 export function SummarySelectionSection({ estimate, onReset }) {
   const exportRef = useRef(null)
@@ -43,26 +23,22 @@ export function SummarySelectionSection({ estimate, onReset }) {
         logging: false,
       })
 
-      if (isIOS()) {
-        // Intentar Web Share API con PNG (abre el sheet nativo: WhatsApp, Fotos, etc.)
-        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-        const file = new File([blob], 'resumen-isis-styles.png', { type: 'image/png' })
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+      const file = new File([blob], 'resumen-isis-styles.png', { type: 'image/png' })
 
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'Resumen de precios — Isis Styles' })
-          return
-        }
-
-        // Fallback: abrir PDF en Safari (el usuario puede compartir desde ahí)
-        openPdfOnIOS(canvas)
-        return
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Resumen Isis Styles' })
+      } else {
+        // Fallback: descarga directa (PC sin soporte Web Share)
+        const objUrl = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = objUrl
+        link.download = 'resumen-isis-styles.png'
+        link.click()
+        setTimeout(() => URL.revokeObjectURL(objUrl), 1000)
       }
 
-      // Android / PC: descarga directa PNG
-      const link = document.createElement('a')
-      link.href = canvas.toDataURL('image/png')
-      link.download = `resumen-isis-styles-${Date.now()}.png`
-      link.click()
+      window.open(WHATSAPP_URL, '_blank')
     } catch (err) {
       if (err?.name !== 'AbortError') {
         setExportError('No se pudo exportar. Inténtalo nuevamente.')
@@ -125,7 +101,7 @@ export function SummarySelectionSection({ estimate, onReset }) {
 
         <div className="summary-actions">
           <button className="cta" onClick={handleExport} disabled={isExporting}>
-            {isExporting ? 'Generando...' : 'Compartir resumen'}
+            {isExporting ? 'Generando...' : '📤 Enviar por WhatsApp'}
           </button>
           <button className="cta cta-secondary" onClick={onReset}>
             Limpiar
