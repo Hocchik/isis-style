@@ -97,6 +97,9 @@ const INITIAL_ESTIMATE_STATE = {
   reposicionQty: 0,
 }
 
+const PIES_TECHNIQUES = NO_LENGTH_TECHNIQUES.filter((t) => t.name.includes('(Pies)'))
+const MANOS_NO_LENGTH_TECHNIQUES = NO_LENGTH_TECHNIQUES.filter((t) => !t.name.includes('(Pies)'))
+
 function App() {
   const [techniqueKind, setTechniqueKind] = useState(INITIAL_ESTIMATE_STATE.techniqueKind)
   const [techniqueName, setTechniqueName] = useState(INITIAL_ESTIMATE_STATE.techniqueName)
@@ -107,6 +110,7 @@ function App() {
   const [retiroType, setRetiroType] = useState(INITIAL_ESTIMATE_STATE.retiroType)
   const [reposicionType, setReposicionType] = useState(INITIAL_ESTIMATE_STATE.reposicionType)
   const [reposicionQty, setReposicionQty] = useState(INITIAL_ESTIMATE_STATE.reposicionQty)
+  const [piesTechniqueName, setPiesTechniqueName] = useState('')
 
   useEffect(() => {
     const saved = loadEstimateDraft()
@@ -121,6 +125,7 @@ function App() {
     setRetiroType(saved.retiroType || 'none')
     setReposicionType(saved.reposicionType || 'acrilico')
     setReposicionQty(Number.isInteger(saved.reposicionQty) ? saved.reposicionQty : 0)
+    setPiesTechniqueName(saved.piesTechniqueName || '')
   }, [])
 
   const estimateInputs = useMemo(
@@ -134,6 +139,7 @@ function App() {
       retiroType,
       reposicionType,
       reposicionQty,
+      piesTechniqueName,
     }),
     [
       changeShape,
@@ -145,6 +151,7 @@ function App() {
       selectionOrder,
       techniqueKind,
       techniqueName,
+      piesTechniqueName,
     ],
   )
 
@@ -156,6 +163,33 @@ function App() {
     () => calculateEstimateWithHandlers(estimateInputs, PRICE_TABLES),
     [estimateInputs],
   )
+
+  const piesPrice = piesTechniqueName ? (PRICE_TABLES.PRICES_NO_LENGTH[piesTechniqueName] || 0) : 0
+
+  const estimateWithPies = useMemo(() => {
+    if (!piesTechniqueName || piesPrice === 0) return estimate
+    const piesItem = {
+      name: `Técnica Pies: ${piesTechniqueName}`,
+      unitPrice: piesPrice,
+      qty: 1,
+      freeQty: 0,
+      chargedQty: 1,
+      lineTotal: piesPrice,
+      formattedLineTotal: formatCurrency(piesPrice),
+      formattedUnitPrice: formatCurrency(piesPrice),
+      badge: null,
+      isDisabled: false,
+    }
+    const piesItemWithCategory = { ...piesItem, category: 'pies' }
+    return {
+      ...estimate,
+      items: [piesItemWithCategory, ...estimate.items],
+      total: estimate.total + piesPrice,
+      subtotal: estimate.subtotal + piesPrice,
+      formattedTotal: formatCurrency(estimate.total + piesPrice),
+      formattedSubtotal: formatCurrency(estimate.subtotal + piesPrice),
+    }
+  }, [estimate, piesTechniqueName, piesPrice])
 
   function handleTechniquePick(kind, name) {
     setTechniqueKind(kind)
@@ -206,6 +240,7 @@ function App() {
     setRetiroType(INITIAL_ESTIMATE_STATE.retiroType)
     setReposicionType(INITIAL_ESTIMATE_STATE.reposicionType)
     setReposicionQty(INITIAL_ESTIMATE_STATE.reposicionQty)
+    setPiesTechniqueName('')
   }
 
   return (
@@ -230,7 +265,7 @@ function App() {
         <TechnicalMasterySection
           techniqueKind={techniqueKind}
           techniqueName={techniqueName}
-          noLengthTechniques={NO_LENGTH_TECHNIQUES}
+          noLengthTechniques={MANOS_NO_LENGTH_TECHNIQUES}
           withLengthTechniques={WITH_LENGTH_TECHNIQUES}
           maintenanceTechniques={MANTENIMIENTOS_TECHNIQUES}
           priceTables={PRICE_TABLES}
@@ -239,6 +274,9 @@ function App() {
           onTechniquePick={handleTechniquePick}
           onLengthPick={setLengthLevel}
           formatCurrency={formatCurrency}
+          piesTechniques={PIES_TECHNIQUES}
+          piesTechniqueName={piesTechniqueName}
+          onPiesTechniquePick={setPiesTechniqueName}
         />
 
         <ArtistryDesignSection
@@ -269,7 +307,17 @@ function App() {
         />
       </main>
 
-      <SummarySelectionSection estimate={estimate} onReset={resetEstimateToInitial} />
+      <SummarySelectionSection
+        estimate={estimateWithPies}
+        onReset={resetEstimateToInitial}
+        onUpdateDecorationQty={updateDecorationQty}
+        onSetFullDesignSelected={setFullDesignSelected}
+        onSetIncludedSelected={setIncludedSelected}
+        onToggleChangeShape={() => setChangeShape(false)}
+        onRetiroTypeChange={setRetiroType}
+        onReposicionQtyChange={setReposicionQty}
+        onPiesTechniquePick={setPiesTechniqueName}
+      />
     </div>
   )
 }

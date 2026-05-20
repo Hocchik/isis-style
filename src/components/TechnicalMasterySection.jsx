@@ -10,6 +10,9 @@ export function TechnicalMasterySection({
   onTechniquePick,
   onLengthPick,
   formatCurrency,
+  piesTechniques,
+  piesTechniqueName,
+  onPiesTechniquePick,
 }) {
   const hasOverflowNoLength = noLengthTechniques.length > 5
   const hasOverflowWithLength = withLengthTechniques.length > 5
@@ -158,6 +161,47 @@ export function TechnicalMasterySection({
           </div>
           {hasOverflowMaintenance ? <p className="scroll-hint">Desliza para ver más opciones</p> : null}
         </article>
+      </div>
+
+      <div className="pies-section">
+        <p className="group-title">Servicio de pies <span className="pies-optional">(opcional)</span></p>
+
+        {/* Mobile select */}
+        <div className="mobile-technique-select-wrap">
+          <select
+            className="mobile-technique-select"
+            value={piesTechniqueName}
+            onChange={(e) => onPiesTechniquePick(e.target.value)}
+          >
+            <option value="">Sin servicio de pies</option>
+            {piesTechniques.map((item) => (
+              <option key={item.id} value={item.name}>
+                {item.name} — {formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}
+              </option>
+            ))}
+          </select>
+          <span className={`selected-check ${piesTechniqueName ? 'is-active' : ''}`} aria-hidden>✓</span>
+        </div>
+
+        {/* Desktop cards (horizontal row) */}
+        <div className="pies-cards desktop-technique-list">
+          <button
+            className={!piesTechniqueName ? 'service-card service-card-compact active' : 'service-card service-card-compact'}
+            onClick={() => onPiesTechniquePick('')}
+          >
+            <p className="service-card-title">Sin servicio de pies</p>
+          </button>
+          {piesTechniques.map((item) => (
+            <button
+              key={item.id}
+              className={piesTechniqueName === item.name ? 'service-card service-card-compact active' : 'service-card service-card-compact'}
+              onClick={() => onPiesTechniquePick(item.name)}
+            >
+              <p className="service-card-title">{item.name}</p>
+              <small>{formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}</small>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="length-picker">

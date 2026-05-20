@@ -3,7 +3,30 @@ import html2canvas from 'html2canvas'
 
 const WHATSAPP_URL = `https://wa.me/51942782899?text=${encodeURIComponent('Hola! 💅 Te comparto mi resumen de selección de Isis Styles.')}`
 
-export function SummarySelectionSection({ estimate, onReset }) {
+function getItemCategory(item) {
+  const name = item.name
+  if (item.category) return item.category
+  if (name.startsWith('Técnica Pies:')) return 'pies'
+  if (name.startsWith('Técnica') || name.startsWith('Mantenimiento:')) return 'technique'
+  if (name === 'Cambio de forma') return 'change-shape'
+  if (name.startsWith('Retiro')) return 'retiro'
+  if (name.startsWith('Reposición')) return 'reposicion'
+  if (item.freeQty > 0) return 'decoration-included'
+  if (name.startsWith('Diseño')) return 'decoration-full'
+  return 'decoration-simple'
+}
+
+export function SummarySelectionSection({
+  estimate,
+  onReset,
+  onUpdateDecorationQty,
+  onSetFullDesignSelected,
+  onSetIncludedSelected,
+  onToggleChangeShape,
+  onRetiroTypeChange,
+  onReposicionQtyChange,
+  onPiesTechniquePick,
+}) {
   const exportRef = useRef(null)
   const [isExporting, setIsExporting] = useState(false)
   const [exportError, setExportError] = useState('')
@@ -84,14 +107,94 @@ export function SummarySelectionSection({ estimate, onReset }) {
         </div>
 
         <ul>
-          {estimate.items.map((item, index) => (
-            <li key={`${item.name}-${index}`}>
-              <span>
-                {item.name} {item.badge ? `(${item.badge})` : ''}
-              </span>
-              <strong>{item.formattedLineTotal}</strong>
-            </li>
-          ))}
+          {estimate.items.map((item, index) => {
+            const category = getItemCategory(item)
+            const isTechnique = category === 'technique'
+
+            let controls = null
+            if (category === 'pies') {
+              controls = (
+                <button
+                  type="button"
+                  className="summary-item-remove"
+                  onClick={() => onPiesTechniquePick('')}
+                  aria-label="Quitar servicio de pies"
+                >×</button>
+              )
+            } else if (category === 'change-shape') {
+              controls = (
+                <button
+                  type="button"
+                  className="summary-item-remove"
+                  onClick={onToggleChangeShape}
+                  aria-label="Quitar cambio de forma"
+                >×</button>
+              )
+            } else if (category === 'retiro') {
+              controls = (
+                <button
+                  type="button"
+                  className="summary-item-remove"
+                  onClick={() => onRetiroTypeChange('none')}
+                  aria-label="Quitar retiro"
+                >×</button>
+              )
+            } else if (category === 'reposicion') {
+              controls = (
+                <div className="summary-item-qty-control">
+                  <button
+                    type="button"
+                    onClick={() => onReposicionQtyChange(Math.max(0, item.qty - 1))}
+                    disabled={item.qty <= 1}
+                  >−</button>
+                  <span>{item.qty}</span>
+                  <button type="button" onClick={() => onReposicionQtyChange(item.qty + 1)}>+</button>
+                </div>
+              )
+            } else if (category === 'decoration-included') {
+              controls = (
+                <button
+                  type="button"
+                  className="summary-item-remove"
+                  onClick={() => onSetIncludedSelected(item.name, false)}
+                  aria-label={`Quitar ${item.name}`}
+                >×</button>
+              )
+            } else if (category === 'decoration-full') {
+              controls = (
+                <button
+                  type="button"
+                  className="summary-item-remove"
+                  onClick={() => onSetFullDesignSelected(item.name, false)}
+                  aria-label={`Quitar ${item.name}`}
+                >×</button>
+              )
+            } else if (category === 'decoration-simple') {
+              controls = (
+                <div className="summary-item-qty-control">
+                  <button
+                    type="button"
+                    onClick={() => onUpdateDecorationQty(item.name, -1)}
+                    disabled={item.qty <= 0}
+                  >−</button>
+                  <span>{item.qty}</span>
+                  <button type="button" onClick={() => onUpdateDecorationQty(item.name, 1)}>+</button>
+                </div>
+              )
+            }
+
+            return (
+              <li key={`${item.name}-${index}`}>
+                <span>
+                  {item.name} {item.badge ? `(${item.badge})` : ''}
+                </span>
+                <div className="summary-item-actions">
+                  {!isTechnique && controls}
+                  <strong>{item.formattedLineTotal}</strong>
+                </div>
+              </li>
+            )
+          })}
         </ul>
 
         <div className="summary-total">
