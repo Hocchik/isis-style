@@ -30,6 +30,8 @@ export const WITH_LENGTH_TECHNIQUES = [
 export const INCLUDED_DECORATION_OPTIONS = [
   { name: 'Francesas', image: '/francesas.jpeg' },
   { name: 'Color entero', image: '/color-entero.jpeg' },
+  { name: 'Forma cuadrada', image: '/cuadradas.jpeg' },
+  { name: 'Forma almendra', image: '/almendras.jpeg' },
 ]
 
 // Decoraciones simples: se cobran por par, las 2 primeras seleccionadas son gratis
@@ -171,6 +173,7 @@ export const PRICE_TABLES = {
     'Baby boomer': 5,
     'Piedras elaborado': 4,
     'Nail art básico': 5,
+    'Forma almendra': 5,
     // Diseños completos (precio por juego completo)
     'Diseño completo de piedras simple': 5,
     'Diseño completo de piedras elaborado': 15,
@@ -184,7 +187,7 @@ export const PRICE_TABLES = {
     'Diseño completo Mármol': 10,
     'Diseño completo Relieve': 15,
   },
-  INCLUDED_DECORATIONS: INCLUDED_DECORATION_OPTIONS.map((item) => item.name),
+  INCLUDED_DECORATIONS: ['Francesas', 'Color entero', 'Forma cuadrada'],
   CHANGE_SHAPE_PRICE: 10,
   RETIRO_PRICES: {
     none: 0,
@@ -227,5 +230,7 @@ export const PRICE_TABLES = {
     'Diseño completo Polka dots': [],
     'Diseño completo Mármol': [],
     'Diseño completo Relieve': [],
+    'Forma cuadrada': ['Forma almendra'],
+    'Forma almendra': ['Forma cuadrada'],
   },
 }

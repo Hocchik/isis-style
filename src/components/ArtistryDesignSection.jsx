@@ -194,7 +194,7 @@ export function ArtistryDesignSection({
                   />
                   <div className="design-body">
                     <h3>{item.name}</h3>
-                    <p>Incluidos</p>
+                    <p>{decorationPrices[item.name] > 0 ? formatCurrency(decorationPrices[item.name]) : 'Incluidos'}</p>
                     {decorationUi.badge ? (
                       <span className="included-badge">{decorationUi.badge}</span>
                     ) : null}
