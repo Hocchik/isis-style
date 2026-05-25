@@ -192,8 +192,13 @@ function App() {
   }, [estimate, piesTechniqueName, piesPrice])
 
   function handleTechniquePick(kind, name) {
-    setTechniqueKind(kind)
-    setTechniqueName(name)
+    if (kind === 'none' || (techniqueKind === kind && techniqueName === name)) {
+      setTechniqueKind('none')
+      setTechniqueName('')
+    } else {
+      setTechniqueKind(kind)
+      setTechniqueName(name)
+    }
   }
 
   function updateDecorationQty(name, delta) {

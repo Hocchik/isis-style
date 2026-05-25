@@ -292,7 +292,8 @@ export function calculateEstimate(rawInputs = {}, rawPriceTables = {}) {
   if (
     inputs.techniqueKind !== 'no-length' &&
     inputs.techniqueKind !== 'with-length' &&
-    inputs.techniqueKind !== 'maintenance'
+    inputs.techniqueKind !== 'maintenance' &&
+    inputs.techniqueKind !== 'none'
   ) {
     pushMessage(messages, 'warning', 'INVALID_TECHNIQUE_KIND', 'El tipo de técnica no es válido. Se usará 0.')
   }

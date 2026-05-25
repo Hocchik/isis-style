@@ -17,7 +17,7 @@ export function TechnicalMasterySection({
   const hasOverflowNoLength = noLengthTechniques.length > 5
   const hasOverflowWithLength = withLengthTechniques.length > 5
   const hasOverflowMaintenance = maintenanceTechniques.length > 5
-  const isLengthDisabled = techniqueKind === 'no-length' || techniqueKind === 'maintenance'
+  const isLengthDisabled = techniqueKind !== 'with-length'
   const withLengthPrices = priceTables.PRICES_WITH_LENGTH[techniqueName] || {}
   const minLength = lengthLevels[0] || 1
   const maxLength = lengthLevels[lengthLevels.length - 1] || 6
@@ -26,20 +26,9 @@ export function TechnicalMasterySection({
     return formatCurrency(withLengthPrices[level] || 0)
   }
 
-  const mobileNoLengthValue =
-    techniqueKind === 'no-length'
-      ? techniqueName
-      : (noLengthTechniques[0] && noLengthTechniques[0].name) || ''
-
-  const mobileWithLengthValue =
-    techniqueKind === 'with-length'
-      ? techniqueName
-      : (withLengthTechniques[0] && withLengthTechniques[0].name) || ''
-
-  const mobileMaintenanceValue =
-    techniqueKind === 'maintenance'
-      ? techniqueName
-      : (maintenanceTechniques[0] && maintenanceTechniques[0].name) || ''
+  const mobileNoLengthValue = techniqueKind === 'no-length' ? techniqueName : ''
+  const mobileWithLengthValue = techniqueKind === 'with-length' ? techniqueName : ''
+  const mobileMaintenanceValue = techniqueKind === 'maintenance' ? techniqueName : ''
 
   return (
     <section className="section-block">
@@ -54,8 +43,9 @@ export function TechnicalMasterySection({
             <select
               className="mobile-technique-select"
               value={mobileNoLengthValue}
-              onChange={(event) => onTechniquePick('no-length', event.target.value)}
+              onChange={(event) => onTechniquePick(event.target.value ? 'no-length' : 'none', event.target.value)}
             >
+              <option value="">Sin técnica de manos</option>
               {noLengthTechniques.map((item) => (
                 <option key={item.id} value={item.name}>
                   {item.name} - {formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}
@@ -92,8 +82,9 @@ export function TechnicalMasterySection({
             <select
               className="mobile-technique-select"
               value={mobileWithLengthValue}
-              onChange={(event) => onTechniquePick('with-length', event.target.value)}
+              onChange={(event) => onTechniquePick(event.target.value ? 'with-length' : 'none', event.target.value)}
             >
+              <option value="">Sin técnica de manos</option>
               {withLengthTechniques.map((item) => (
                 <option key={item.id} value={item.name}>
                   {item.name} - Desde {formatCurrency(priceTables.PRICES_WITH_LENGTH[item.name]?.[1] || 0)}
@@ -130,8 +121,9 @@ export function TechnicalMasterySection({
             <select
               className="mobile-technique-select"
               value={mobileMaintenanceValue}
-              onChange={(event) => onTechniquePick('maintenance', event.target.value)}
+              onChange={(event) => onTechniquePick(event.target.value ? 'maintenance' : 'none', event.target.value)}
             >
+              <option value="">Sin técnica de manos</option>
               {maintenanceTechniques.map((item) => (
                 <option key={item.id} value={item.name}>
                   {item.name} - {formatCurrency(priceTables.PRICES_NO_LENGTH[item.name] || 0)}
