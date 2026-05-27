@@ -1,7 +1,26 @@
 import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 
-const WHATSAPP_URL = `https://wa.me/51942782899?text=${encodeURIComponent('Hola! 💅 Te comparto mi resumen de selección de Isis Styles.')}`
+const WHATSAPP_PHONE = '51942782899'
+
+function buildWhatsAppUrl(estimate) {
+  const lines = estimate.items.map((item) => {
+    const badge = item.badge ? ` (${item.badge})` : ''
+    return `• ${item.name}${badge}: ${item.formattedLineTotal}`
+  })
+
+  const text = [
+    'Hola! 💅 Te comparto mi selección en Isis Styles:',
+    '',
+    ...lines,
+    '',
+    `*Total estimado: ${estimate.formattedTotal}*`,
+    '',
+    '_Precio final sujeto a evaluación presencial._',
+  ].join('\n')
+
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`
+}
 
 function getItemCategory(item) {
   const name = item.name
@@ -52,18 +71,12 @@ export function SummarySelectionSection({
       ])
 
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-      const file = new File([blob], 'resumen-isis-styles.png', { type: 'image/png' })
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Resumen Isis Styles' })
-      } else {
-        const objUrl = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = objUrl
-        link.download = 'resumen-isis-styles.png'
-        link.click()
-        setTimeout(() => URL.revokeObjectURL(objUrl), 1000)
-      }
+      const objUrl = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = objUrl
+      link.download = 'resumen-isis-styles.png'
+      link.click()
+      setTimeout(() => URL.revokeObjectURL(objUrl), 1000)
     } catch (err) {
       if (err?.name === 'AbortError') return
       const msg = err?.message === 'timeout'
@@ -209,7 +222,7 @@ export function SummarySelectionSection({
         <div className="summary-actions">
           <a
             className="cta cta-whatsapp"
-            href={WHATSAPP_URL}
+            href={buildWhatsAppUrl(estimate)}
             target="_blank"
             rel="noopener noreferrer"
           >
