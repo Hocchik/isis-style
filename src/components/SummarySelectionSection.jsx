@@ -39,12 +39,17 @@ export function SummarySelectionSection({
     setExportError('')
 
     try {
-      const canvas = await html2canvas(exportRef.current, {
-        scale: 2,
-        backgroundColor: '#f5f4f1',
-        useCORS: true,
-        logging: false,
-      })
+      const canvas = await Promise.race([
+        html2canvas(exportRef.current, {
+          scale: 2,
+          backgroundColor: '#f5f4f1',
+          useCORS: true,
+          logging: false,
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 8000),
+        ),
+      ])
 
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
       const file = new File([blob], 'resumen-isis-styles.png', { type: 'image/png' })
@@ -52,7 +57,6 @@ export function SummarySelectionSection({
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Resumen Isis Styles' })
       } else {
-        // Fallback: descarga directa (PC sin soporte Web Share)
         const objUrl = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = objUrl
@@ -60,12 +64,12 @@ export function SummarySelectionSection({
         link.click()
         setTimeout(() => URL.revokeObjectURL(objUrl), 1000)
       }
-
-      window.open(WHATSAPP_URL, '_blank')
     } catch (err) {
-      if (err?.name !== 'AbortError') {
-        setExportError('No se pudo exportar. Inténtalo nuevamente.')
-      }
+      if (err?.name === 'AbortError') return
+      const msg = err?.message === 'timeout'
+        ? 'Tardó demasiado. Inténtalo nuevamente.'
+        : 'No se pudo generar la imagen. Inténtalo nuevamente.'
+      setExportError(msg)
     } finally {
       setIsExporting(false)
     }
@@ -203,10 +207,18 @@ export function SummarySelectionSection({
         </div>
 
         <div className="summary-actions">
-          <button className="cta" onClick={handleExport} disabled={isExporting}>
-            {isExporting ? 'Generando...' : '📤 Enviar por WhatsApp'}
+          <a
+            className="cta cta-whatsapp"
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            💬 Enviar por WhatsApp
+          </a>
+          <button className="cta cta-secondary" onClick={handleExport} disabled={isExporting}>
+            {isExporting ? 'Generando...' : '📤 Compartir imagen'}
           </button>
-          <button className="cta cta-secondary" onClick={onReset}>
+          <button className="cta cta-tertiary" onClick={onReset}>
             Limpiar
           </button>
         </div>
