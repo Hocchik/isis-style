@@ -1015,6 +1015,13 @@
   color: #8f5f2f;
 }
 
+.clipboard-hint {
+  display: block;
+  margin-top: 8px;
+  color: #3a7d2c;
+  font-weight: 600;
+}
+
 .pies-section {
   border-top: 1px dashed #d0d8cc;
   padding-top: 16px;

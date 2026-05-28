@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 
 const WHATSAPP_PHONE = '51942782899'
@@ -47,44 +47,89 @@ export function SummarySelectionSection({
   onPiesTechniquePick,
 }) {
   const exportRef = useRef(null)
-  const [isExporting, setIsExporting] = useState(false)
+  const [isSendingWA, setIsSendingWA] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const [exportError, setExportError] = useState('')
+  const [clipboardReady, setClipboardReady] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
-  async function handleExport() {
-    if (!exportRef.current || isExporting) return
+  useEffect(() => {
+    if (!clipboardReady) return
+    const timer = setTimeout(() => setClipboardReady(false), 6000)
+    return () => clearTimeout(timer)
+  }, [clipboardReady])
 
-    setIsExporting(true)
+  async function generateBlob() {
+    const canvas = await Promise.race([
+      html2canvas(exportRef.current, {
+        scale: 2,
+        backgroundColor: '#f5f4f1',
+        useCORS: true,
+        logging: false,
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 8000),
+      ),
+    ])
+    return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+  }
+
+  function downloadBlob(blob) {
+    const objUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = objUrl
+    link.download = 'resumen-isis-styles.png'
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(objUrl), 1000)
+  }
+
+  async function handleWhatsApp() {
+    if (!exportRef.current || isSendingWA) return
+    setIsSendingWA(true)
     setExportError('')
+    setClipboardReady(false)
+
+    // Abrir WhatsApp sincrónicamente antes del await para que no sea bloqueado
+    window.open(buildWhatsAppUrl(estimate), '_blank')
 
     try {
-      const canvas = await Promise.race([
-        html2canvas(exportRef.current, {
-          scale: 2,
-          backgroundColor: '#f5f4f1',
-          useCORS: true,
-          logging: false,
-        }),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 8000),
-        ),
-      ])
+      const blob = await generateBlob()
 
-      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-      const objUrl = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = objUrl
-      link.download = 'resumen-isis-styles.png'
-      link.click()
-      setTimeout(() => URL.revokeObjectURL(objUrl), 1000)
+      // Copiar imagen al portapapeles para que el usuario solo tenga que pegar en WA
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+          setClipboardReady(true)
+        } catch {
+          // Portapapeles no disponible — sin mensaje de error, WA ya está abierto
+        }
+      }
     } catch (err) {
-      if (err?.name === 'AbortError') return
-      const msg = err?.message === 'timeout'
-        ? 'Tardó demasiado. Inténtalo nuevamente.'
-        : 'No se pudo generar la imagen. Inténtalo nuevamente.'
-      setExportError(msg)
+      setExportError(
+        err?.message === 'timeout'
+          ? 'Tardó demasiado generando la imagen.'
+          : 'No se pudo generar la imagen.',
+      )
     } finally {
-      setIsExporting(false)
+      setIsSendingWA(false)
+    }
+  }
+
+  async function handleDownload() {
+    if (!exportRef.current || isDownloading) return
+    setIsDownloading(true)
+    setExportError('')
+    try {
+      const blob = await generateBlob()
+      downloadBlob(blob)
+    } catch (err) {
+      setExportError(
+        err?.message === 'timeout'
+          ? 'Tardó demasiado. Inténtalo nuevamente.'
+          : 'No se pudo generar la imagen. Inténtalo nuevamente.',
+      )
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -220,16 +265,11 @@ export function SummarySelectionSection({
         </div>
 
         <div className="summary-actions">
-          <a
-            className="cta cta-whatsapp"
-            href={buildWhatsAppUrl(estimate)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            💬 Enviar por WhatsApp
-          </a>
-          <button className="cta cta-secondary" onClick={handleExport} disabled={isExporting}>
-            {isExporting ? 'Generando...' : '📤 Compartir imagen'}
+          <button className="cta cta-whatsapp" onClick={handleWhatsApp} disabled={isSendingWA}>
+            {isSendingWA ? 'Generando...' : '💬 Enviar por WhatsApp'}
+          </button>
+          <button className="cta cta-secondary" onClick={handleDownload} disabled={isDownloading}>
+            {isDownloading ? 'Generando...' : '📥 Descargar imagen'}
           </button>
           <button className="cta cta-tertiary" onClick={onReset}>
             Limpiar
@@ -237,6 +277,12 @@ export function SummarySelectionSection({
         </div>
 
         <small>Precio final sujeto a evaluación presencial.</small>
+
+        {clipboardReady ? (
+          <small className="clipboard-hint">
+            📋 Imagen copiada — pégala en WhatsApp manteniendo presionado.
+          </small>
+        ) : null}
 
         {exportError ? <small className="validation-text">{exportError}</small> : null}
 
