@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 
 const WHATSAPP_PHONE = '51942782899'
@@ -50,14 +50,7 @@ export function SummarySelectionSection({
   const [isSendingWA, setIsSendingWA] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [exportError, setExportError] = useState('')
-  const [clipboardReady, setClipboardReady] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-
-  useEffect(() => {
-    if (!clipboardReady) return
-    const timer = setTimeout(() => setClipboardReady(false), 6000)
-    return () => clearTimeout(timer)
-  }, [clipboardReady])
 
   async function generateBlob() {
     const canvas = await Promise.race([
@@ -87,28 +80,21 @@ export function SummarySelectionSection({
     if (!exportRef.current || isSendingWA) return
     setIsSendingWA(true)
     setExportError('')
-    setClipboardReady(false)
-
-    // Abrir WhatsApp sincrónicamente antes del await para que no sea bloqueado
-    window.open(buildWhatsAppUrl(estimate), '_blank')
-
     try {
       const blob = await generateBlob()
-
-      // Copiar imagen al portapapeles para que el usuario solo tenga que pegar en WA
-      if (navigator.clipboard && window.ClipboardItem) {
-        try {
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-          setClipboardReady(true)
-        } catch {
-          // Portapapeles no disponible — sin mensaje de error, WA ya está abierto
-        }
+      const file = new File([blob], 'resumen-isis-styles.png', { type: 'image/png' })
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Resumen Isis Styles' })
+      } else {
+        // Desktop sin Web Share: descarga directa
+        downloadBlob(blob)
       }
     } catch (err) {
+      if (err?.name === 'AbortError') return
       setExportError(
         err?.message === 'timeout'
-          ? 'Tardó demasiado generando la imagen.'
-          : 'No se pudo generar la imagen.',
+          ? 'Tardó demasiado. Inténtalo nuevamente.'
+          : 'No se pudo generar la imagen. Inténtalo nuevamente.',
       )
     } finally {
       setIsSendingWA(false)
@@ -277,12 +263,6 @@ export function SummarySelectionSection({
         </div>
 
         <small>Precio final sujeto a evaluación presencial.</small>
-
-        {clipboardReady ? (
-          <small className="clipboard-hint">
-            📋 Imagen copiada — pégala en WhatsApp manteniendo presionado.
-          </small>
-        ) : null}
 
         {exportError ? <small className="validation-text">{exportError}</small> : null}
 
